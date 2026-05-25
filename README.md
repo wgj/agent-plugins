@@ -17,6 +17,28 @@ This repo includes a local marketplace file at:
 
 The marketplace entries point at `./plugins/<plugin-name>` so the repo can be installed or shared as a Codex plugin source.
 
+## Global AGENTS.md
+
+The source-controlled copy of the global Codex guidance lives at:
+
+```text
+global/AGENTS.md
+```
+
+Sync it to the active Codex home file with:
+
+```bash
+scripts/sync-global-agents.sh apply
+```
+
+Check for drift with:
+
+```bash
+scripts/sync-global-agents.sh check
+```
+
+Use `scripts/sync-global-agents.sh pull` only when the live global file intentionally changed first and should become the repo source of truth.
+
 ## Codex App Skill Setup
 
 For a new computer, install shared Codex skills separately from this plugin marketplace.
