@@ -1,7 +1,7 @@
 {
-  "name": "agent-plugins",
+  "name": "wgj",
   "interface": {
-    "displayName": "Agent Plugins"
+    "displayName": "WGJ"
   },
   "plugins": [
     {
