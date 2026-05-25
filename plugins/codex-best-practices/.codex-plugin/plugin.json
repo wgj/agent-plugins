@@ -1,0 +1,42 @@
+{
+  "name": "codex-best-practices",
+  "version": "0.1.0",
+  "description": "Bootstrap Codex best-practice guidance, product specs, ExecPlans, validation docs, and reusable workflows.",
+  "author": {
+    "name": "Weston Johnson",
+    "url": "https://github.com/wgj"
+  },
+  "homepage": "https://github.com/wgj/agent-plugins/tree/main/plugins/codex-best-practices",
+  "repository": "https://github.com/wgj/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "agents-md",
+    "best-practices",
+    "execplan",
+    "product-spec",
+    "planning",
+    "skills",
+    "mcp",
+    "automations"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Codex Best Practices",
+    "shortDescription": "Bootstrap Codex best practices.",
+    "longDescription": "Creates or revises repository-local Codex operating docs, AGENTS.md guidance, product specs, ExecPlans, validation and review guidance, MCP decision notes, skill candidates, automation candidates, and session/subagent practices so cold-start Codex sessions can work from checked-in project context.",
+    "developerName": "Weston Johnson",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/wgj/agent-plugins/tree/main/plugins/codex-best-practices",
+    "brandColor": "#2563EB",
+    "defaultPrompt": [
+      "Bootstrap Codex best practices in this repo.",
+      "Audit this repo's Codex guidance.",
+      "Promote this spec into an active ExecPlan."
+    ]
+  }
+}
