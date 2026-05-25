@@ -17,6 +17,25 @@ This repo includes a local marketplace file at:
 
 The marketplace entries point at `./plugins/<plugin-name>` so the repo can be installed or shared as a Codex plugin source.
 
+Install the marketplace from GitHub:
+
+```bash
+codex plugin marketplace add https://github.com/wgj/agent-plugins --ref main
+```
+
+Then install a plugin:
+
+```bash
+codex plugin add kubernetes@wgj
+```
+
+For local development, add this checkout as the marketplace source instead:
+
+```bash
+codex plugin marketplace add /path/to/agent-plugins
+codex plugin add kubernetes@wgj
+```
+
 ## Global AGENTS.md
 
 The source-controlled copy of the global Codex guidance lives at:
