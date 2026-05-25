@@ -44,13 +44,23 @@ PREVIEW_PREFIX=$(k8s_dns_label "${K8S_PREVIEW_NAMESPACE_PREFIX:-codex-preview}")
 if [ -n "${K8S_DEPLOY_NAMESPACE:-}" ]; then
   NAMESPACES=$(k8s_dns_label "$K8S_DEPLOY_NAMESPACE")
 else
-  NAMESPACES=$(kubectl get namespace \
+  DISCOVERED_NAMESPACES=$(kubectl get namespace \
     -l "app.kubernetes.io/managed-by=codex,codex.openai.com/app=${APP},codex.openai.com/deploy-mode=preview" \
     -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
+  NAMESPACES=""
+  while IFS= read -r NAMESPACE; do
+    [ -n "$NAMESPACE" ] || continue
+    if k8s_namespace_has_preview_prefix "$NAMESPACE" "$PREVIEW_PREFIX"; then
+      NAMESPACES="${NAMESPACES}${NAMESPACE}
+"
+    fi
+  done <<EOF
+$DISCOVERED_NAMESPACES
+EOF
 fi
 
 if [ -z "$NAMESPACES" ]; then
-  k8s_die "No Codex-managed preview namespaces found for app '$APP'. Set K8S_DEPLOY_NAMESPACE to target one."
+  k8s_die "No Codex-managed preview namespaces found for app '$APP' with K8S_PREVIEW_NAMESPACE_PREFIX='$PREVIEW_PREFIX'. Set K8S_DEPLOY_NAMESPACE to target one."
 fi
 
 k8s_info "Kubernetes cleanup"
