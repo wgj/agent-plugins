@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 96" role="img" aria-label="Kubernetes Deploy">
+  <rect width="320" height="96" rx="16" fill="#0F172A"/>
+  <g transform="translate(22 16)">
+    <path d="M32 0 60 16v32L32 64 4 48V16L32 0Z" fill="#326CE5"/>
+    <path d="M32 9v14M32 41v14M13 20l12 7M39 37l12 7M51 20l-12 7M25 37l-12 7" stroke="#fff" stroke-width="4" stroke-linecap="round"/>
+    <circle cx="32" cy="32" r="7" fill="#fff"/>
+  </g>
+  <text x="104" y="40" fill="#fff" font-family="Arial, sans-serif" font-size="24" font-weight="700">Kubernetes</text>
+  <text x="104" y="66" fill="#CBD5E1" font-family="Arial, sans-serif" font-size="16">preview deploys for Codex</text>
+</svg>

@@ -1,0 +1,45 @@
+{
+  "name": "kubernetes",
+  "version": "0.1.0",
+  "description": "Deploy applications to Kubernetes with safe preview defaults",
+  "author": {
+    "name": "Weston Johnson",
+    "url": "https://github.com/wgj"
+  },
+  "homepage": "https://github.com/wgj/agent-plugins/tree/main/plugins/kubernetes",
+  "repository": "https://github.com/wgj/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "kubernetes",
+    "kubectl",
+    "k8s",
+    "deployment",
+    "preview",
+    "docker",
+    "k3s",
+    "ingress",
+    "loadbalancer"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Kubernetes",
+    "shortDescription": "Deploy safe previews to Kubernetes.",
+    "longDescription": "Deploy applications to Kubernetes through kubectl with guarded preview defaults, optional image build and push, port-forward-first exposure, explicit Ingress or LoadBalancer support, rollout checks, status inspection, and cleanup for Codex-managed preview resources.",
+    "developerName": "Weston Johnson",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/wgj/agent-plugins/tree/main/plugins/kubernetes",
+    "brandColor": "#326CE5",
+    "composerIcon": "./assets/kubernetes-icon.svg",
+    "logo": "./assets/kubernetes-logo.svg",
+    "screenshots": [],
+    "defaultPrompt": [
+      "Deploy this project to Kubernetes as a preview.",
+      "Show the status of my Kubernetes preview.",
+      "Clean up the Kubernetes preview for this project."
+    ]
+  }
+}

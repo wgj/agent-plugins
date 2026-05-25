@@ -1,0 +1,5 @@
+interface:
+  display_name: "Kubernetes Deploy"
+  short_description: "Deploy previews to Kubernetes with safe defaults."
+  brand_color: "#326CE5"
+  default_prompt: "Deploy this project to Kubernetes as a safe preview."
