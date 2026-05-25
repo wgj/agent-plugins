@@ -10,7 +10,8 @@ Deploy applications to Kubernetes through `kubectl`. Preview deploys are the def
 ## Safety Defaults
 
 - Treat the active kubecontext as dangerous until checked. Show the context, namespace, app name, image, and exposure mode before mutating resources.
-- Preview deploys use Codex-managed labels and default to an isolated namespace named `codex-preview-<app>-<slug>`.
+- Preview deploys use Codex-managed labels and default to an isolated namespace beginning with `codex-preview`. Users may change the required prefix with `K8S_PREVIEW_NAMESPACE_PREFIX`.
+- If `K8S_DEPLOY_NAMESPACE` is set for a preview, it must equal or begin with the configured preview prefix. Preview deploys into namespaces such as `production` are not supported.
 - Default exposure is private `ClusterIP` plus a port-forward command. Do not describe this as a public or shareable URL.
 - `Ingress` and `LoadBalancer` exposure are explicit opt-ins through configuration.
 - Never use `latest` for generated image tags. Prefer commit SHA or timestamp tags.
@@ -49,7 +50,7 @@ K8S_IMAGE_PULL_POLICY=IfNotPresent \
   bash "$skill_dir/scripts/deploy.sh" /path/to/project
 ```
 
-The script returns JSON with the namespace, app, image, exposure mode, local URL, port-forward command, and public URL when one exists.
+The script runs server-side dry-run checks where the target namespace exists. The script returns JSON with the namespace, app, image, exposure mode, local URL, port-forward command, and public URL when one exists.
 
 ## Status
 
@@ -69,7 +70,7 @@ Cleanup is part of the workflow. Use it when the user asks to tear down a previe
 bash "$skill_dir/scripts/cleanup.sh" /path/to/project
 ```
 
-By default, cleanup deletes generated preview resources and auto-deletes `codex-preview-*` namespaces that carry Codex labels. For non-preview namespaces, it refuses unless `K8S_CONFIRM_PRODUCTION_CLEANUP=1` is set.
+By default, cleanup deletes generated preview resources and auto-deletes namespaces that carry Codex labels and begin with `K8S_PREVIEW_NAMESPACE_PREFIX-`. For non-preview namespaces, it refuses unless `K8S_CONFIRM_PRODUCTION_CLEANUP=1` is set.
 
 ## Production
 

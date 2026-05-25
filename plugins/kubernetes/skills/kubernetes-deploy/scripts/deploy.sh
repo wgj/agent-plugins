@@ -48,6 +48,7 @@ PROJECT_PATH=$(k8s_abs_path "$PROJECT_ARG")
 APP=$(k8s_dns_label "${K8S_DEPLOY_APP:-$(basename "$PROJECT_PATH")}")
 TAG=$(k8s_dns_label "${K8S_DEPLOY_TAG:-$(k8s_image_tag "$PROJECT_PATH")}")
 PREVIEW_SLUG=$(k8s_preview_slug "$PROJECT_PATH")
+PREVIEW_PREFIX=$(k8s_dns_label "${K8S_PREVIEW_NAMESPACE_PREFIX:-codex-preview}")
 
 if [ "$MODE" = "production" ]; then
   [ -n "${K8S_DEPLOY_NAMESPACE:-}" ] || k8s_die "Production deploys require K8S_DEPLOY_NAMESPACE"
@@ -57,8 +58,11 @@ if [ "$MODE" = "production" ]; then
 else
   if [ -n "${K8S_DEPLOY_NAMESPACE:-}" ]; then
     NAMESPACE=$(k8s_dns_label "$K8S_DEPLOY_NAMESPACE")
+    if ! k8s_namespace_has_preview_prefix "$NAMESPACE" "$PREVIEW_PREFIX"; then
+      k8s_die "Preview namespace '$NAMESPACE' must start with K8S_PREVIEW_NAMESPACE_PREFIX='$PREVIEW_PREFIX'"
+    fi
   else
-    NAMESPACE=$(k8s_dns_label "codex-preview-${APP}-${PREVIEW_SLUG}")
+    NAMESPACE=$(k8s_preview_namespace "$PREVIEW_PREFIX" "$APP" "$PREVIEW_SLUG")
   fi
 fi
 
@@ -131,6 +135,7 @@ metadata:
     app.kubernetes.io/managed-by: codex
     codex.openai.com/app: ${APP}
     codex.openai.com/deploy-mode: ${MODE}
+    codex.openai.com/preview-prefix: ${PREVIEW_PREFIX}
 YAML
 
 cat >"$WORKLOAD_YAML" <<YAML
@@ -251,23 +256,16 @@ k8s_info ""
 
 k8s_info "Validating manifests with kubectl dry-run..."
 if [ "$MODE" = "preview" ]; then
-  kubectl apply --dry-run=client -f "$NAMESPACE_YAML" >/dev/null
-else
-  kubectl get namespace "$NAMESPACE" >/dev/null || k8s_die "Production namespace does not exist: $NAMESPACE"
-fi
-kubectl apply --dry-run=client -f "$WORKLOAD_YAML" >/dev/null
-
-if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
-  k8s_info "Showing kubectl diff when supported..."
-  set +e
-  kubectl diff -f "$WORKLOAD_YAML" >&2
-  DIFF_STATUS=$?
-  set -e
-  if [ "$DIFF_STATUS" -gt 1 ]; then
-    k8s_info "kubectl diff was not available or failed; continuing after client dry-run."
+  kubectl apply --dry-run=server -f "$NAMESPACE_YAML" >/dev/null
+  if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
+    kubectl apply --dry-run=server -f "$WORKLOAD_YAML" >/dev/null
+  else
+    kubectl apply --dry-run=client -f "$WORKLOAD_YAML" >/dev/null
+    k8s_info "Namespace does not exist yet; workload server-side dry-run will run after namespace creation."
   fi
 else
-  k8s_info "Skipping workload diff because namespace does not exist yet."
+  kubectl get namespace "$NAMESPACE" >/dev/null || k8s_die "Production namespace does not exist: $NAMESPACE"
+  kubectl apply --dry-run=server -f "$WORKLOAD_YAML" >/dev/null
 fi
 
 if [ "${K8S_DRY_RUN:-0}" = "1" ]; then
@@ -275,6 +273,17 @@ if [ "${K8S_DRY_RUN:-0}" = "1" ]; then
 else
   if [ "$MODE" = "preview" ]; then
     kubectl apply -f "$NAMESPACE_YAML" >&2
+    kubectl apply --dry-run=server -f "$WORKLOAD_YAML" >/dev/null
+  fi
+  if kubectl get namespace "$NAMESPACE" >/dev/null 2>&1; then
+    k8s_info "Showing kubectl diff when supported..."
+    set +e
+    kubectl diff -f "$WORKLOAD_YAML" >&2
+    DIFF_STATUS=$?
+    set -e
+    if [ "$DIFF_STATUS" -gt 1 ]; then
+      k8s_info "kubectl diff was not available or failed; continuing after server-side dry-run."
+    fi
   fi
   kubectl apply -f "$WORKLOAD_YAML" >&2
   kubectl rollout status "deployment/${APP}" -n "$NAMESPACE" --timeout="$ROLLOUT_TIMEOUT" >&2
@@ -296,7 +305,7 @@ fi
 
 k8s_info ""
 if [ "$EXPOSE_MODE" = "port-forward" ]; then
-  k8s_info "Port-forward preview command:"
+  k8s_info "Port-forward command:"
   k8s_info "  $PORT_FORWARD_COMMAND"
   k8s_info "Local URL after starting port-forward: $LOCAL_URL"
 elif [ -n "$PUBLIC_URL" ]; then
