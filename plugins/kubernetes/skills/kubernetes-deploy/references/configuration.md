@@ -8,6 +8,7 @@ The deploy scripts use environment variables so Codex can adapt to local Kuberne
 | --- | --- | --- | --- |
 | `K8S_DEPLOY_CONTEXT` | Production yes, preview optional | active kubecontext | Guardrail: aborts if the active context does not match. |
 | `K8S_DEPLOY_NAMESPACE` | Production yes, preview optional | `codex-preview-<app>-<slug>` | Namespace for resources. |
+| `K8S_PREVIEW_NAMESPACE_PREFIX` | No | `codex-preview` | Required namespace prefix for preview deploys and cleanup. |
 | `K8S_DEPLOY_APP` | No | project folder name | Kubernetes app/resource name. |
 | `K8S_DEPLOY_IMAGE` | Required unless building | none | Existing image to deploy. |
 | `K8S_DEPLOY_REGISTRY` | Required when building | none | Registry/repository prefix used as `<registry>/<app>:<tag>`. |
@@ -16,7 +17,7 @@ The deploy scripts use environment variables so Codex can adapt to local Kuberne
 | `K8S_DEPLOY_SKIP_PUSH` | No | `0` | Set to `1` for local-image workflows such as Docker Desktop Kubernetes. |
 | `K8S_USE_IMAGE_DIGEST` | No | `1` | After push, use the image digest if Docker reports one. |
 | `K8S_IMAGE_PULL_POLICY` | No | `IfNotPresent` | Container image pull policy. |
-| `K8S_DRY_RUN` | No | `0` | Set to `1` to validate and diff without applying resources. |
+| `K8S_DRY_RUN` | No | `0` | Set to `1` to validate with dry-run checks without applying resources. |
 
 ## Ports and Rollout
 
@@ -42,7 +43,7 @@ The deploy scripts use environment variables so Codex can adapt to local Kuberne
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled `codex-preview-*` namespaces; `0` leaves namespaces; `1` deletes targeted namespaces. |
+| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled namespaces matching `K8S_PREVIEW_NAMESPACE_PREFIX`; `0` leaves namespaces; `1` deletes targeted namespaces. |
 | `K8S_CONFIRM_PRODUCTION_CLEANUP` | Non-preview cleanup yes | `0` | Set to `1` to permit cleanup in a non-preview namespace. |
 
 ## Local Cluster Notes

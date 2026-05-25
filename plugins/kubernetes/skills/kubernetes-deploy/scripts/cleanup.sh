@@ -39,12 +39,13 @@ APP=$(k8s_dns_label "${K8S_DEPLOY_APP:-$(basename "$PROJECT_PATH")}")
 SELECTOR=$(k8s_selector "$APP")
 CURRENT_CONTEXT=$(k8s_current_context)
 DELETE_NAMESPACE="${K8S_DELETE_NAMESPACE:-auto}"
+PREVIEW_PREFIX=$(k8s_dns_label "${K8S_PREVIEW_NAMESPACE_PREFIX:-codex-preview}")
 
 if [ -n "${K8S_DEPLOY_NAMESPACE:-}" ]; then
   NAMESPACES=$(k8s_dns_label "$K8S_DEPLOY_NAMESPACE")
 else
   NAMESPACES=$(kubectl get namespace \
-    -l "app.kubernetes.io/managed-by=codex,codex.openai.com/app=${APP}" \
+    -l "app.kubernetes.io/managed-by=codex,codex.openai.com/app=${APP},codex.openai.com/deploy-mode=preview" \
     -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
 fi
 
@@ -62,16 +63,13 @@ DELETED_RESOURCES=""
 
 while IFS= read -r NAMESPACE; do
   [ -n "$NAMESPACE" ] || continue
-  MODE=$(kubectl get namespace "$NAMESPACE" -o jsonpath='{.metadata.labels.codex\.openai\.com/deploy-mode}' 2>/dev/null || true)
   MANAGED=$(kubectl get namespace "$NAMESPACE" -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}' 2>/dev/null || true)
 
   IS_PREVIEW_NAMESPACE=false
-  case "$NAMESPACE" in
-    codex-preview-*) IS_PREVIEW_NAMESPACE=true ;;
-  esac
+  k8s_namespace_has_preview_prefix "$NAMESPACE" "$PREVIEW_PREFIX" && IS_PREVIEW_NAMESPACE=true
 
   if [ "$IS_PREVIEW_NAMESPACE" != true ] && [ "${K8S_CONFIRM_PRODUCTION_CLEANUP:-0}" != "1" ]; then
-    k8s_die "Refusing to clean non-preview namespace '$NAMESPACE'. Set K8S_CONFIRM_PRODUCTION_CLEANUP=1 if this is intentional."
+    k8s_die "Refusing to clean namespace '$NAMESPACE' because it does not start with K8S_PREVIEW_NAMESPACE_PREFIX='$PREVIEW_PREFIX'. Set K8S_CONFIRM_PRODUCTION_CLEANUP=1 if this is intentional."
   fi
 
   k8s_info "Cleaning namespace: $NAMESPACE"
@@ -85,8 +83,6 @@ while IFS= read -r NAMESPACE; do
   else
     k8s_info "Leaving namespace in place: $NAMESPACE"
   fi
-
-  [ -n "$MODE" ] || true
 done <<EOF
 $NAMESPACES
 EOF

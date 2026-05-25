@@ -41,7 +41,7 @@ if [ -n "${K8S_DEPLOY_NAMESPACE:-}" ]; then
   NAMESPACES=$(k8s_dns_label "$K8S_DEPLOY_NAMESPACE")
 else
   NAMESPACES=$(kubectl get namespace \
-    -l "app.kubernetes.io/managed-by=codex,codex.openai.com/app=${APP}" \
+    -l "app.kubernetes.io/managed-by=codex,codex.openai.com/app=${APP},codex.openai.com/deploy-mode=preview" \
     -o jsonpath='{range .items[*]}{.metadata.name}{"\n"}{end}' 2>/dev/null || true)
 fi
 

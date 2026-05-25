@@ -48,6 +48,44 @@ k8s_preview_slug() {
   k8s_dns_label "$slug"
 }
 
+k8s_preview_namespace() {
+  local prefix="$1"
+  local app="$2"
+  local slug="$3"
+  local hash
+  if command -v shasum >/dev/null 2>&1; then
+    hash=$(printf '%s-%s' "$app" "$slug" | shasum | awk '{print $1}')
+  elif command -v sha1sum >/dev/null 2>&1; then
+    hash=$(printf '%s-%s' "$app" "$slug" | sha1sum | awk '{print $1}')
+  else
+    hash=$(printf '%s-%s' "$app" "$slug" | cksum | awk '{print $1}')
+  fi
+  hash=${hash:0:8}
+  prefix=$(k8s_dns_label "$prefix")
+  app=$(k8s_dns_label "$app")
+  slug=$(k8s_dns_label "$slug")
+
+  local suffix_budget=$((63 - ${#prefix} - ${#hash} - 3))
+  if [ "$suffix_budget" -lt 8 ]; then
+    k8s_die "K8S_PREVIEW_NAMESPACE_PREFIX is too long; use 44 characters or fewer"
+  fi
+
+  local app_budget=$((suffix_budget / 2))
+  local slug_budget=$((suffix_budget - app_budget - 1))
+  app=${app:0:$app_budget}
+  slug=${slug:0:$slug_budget}
+  app=$(printf '%s' "$app" | sed -E 's/^-+//; s/-+$//')
+  slug=$(printf '%s' "$slug" | sed -E 's/^-+//; s/-+$//')
+
+  printf '%s-%s-%s-%s' "$prefix" "$app" "$slug" "$hash" | sed -E 's/-+/-/g; s/-+$//'
+}
+
+k8s_namespace_has_preview_prefix() {
+  local namespace="$1"
+  local prefix="$2"
+  [ "$namespace" = "$prefix" ] || [[ "$namespace" == "$prefix"-* ]]
+}
+
 k8s_image_tag() {
   local project_path="$1"
   local tag=""
