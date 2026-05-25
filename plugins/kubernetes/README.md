@@ -81,7 +81,7 @@ Set `K8S_DEPLOY_NAMESPACE` when you want one namespace instead of all Codex-mana
 bash "$skill_dir/scripts/cleanup.sh" /path/to/project
 ```
 
-Cleanup deletes Deployment, Service, and Ingress resources matching Codex labels. It also auto-deletes generated preview namespaces with Codex labels when the namespace matches `K8S_PREVIEW_NAMESPACE_PREFIX`. To clean resources in a non-preview namespace, set `K8S_CONFIRM_PRODUCTION_CLEANUP=1`.
+Cleanup deletes Deployment, Service, and Ingress resources matching Codex labels. It also auto-deletes generated preview namespaces with Codex labels when the namespace begins with `K8S_PREVIEW_NAMESPACE_PREFIX` plus `-`. To clean resources in a non-preview namespace, set `K8S_CONFIRM_PRODUCTION_CLEANUP=1`.
 
 ## Environment Variables
 
@@ -126,7 +126,7 @@ Cleanup deletes Deployment, Service, and Ingress resources matching Codex labels
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled namespaces matching `K8S_PREVIEW_NAMESPACE_PREFIX`; `0` leaves namespaces; `1` deletes targeted namespaces. |
+| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled generated namespaces beginning with `K8S_PREVIEW_NAMESPACE_PREFIX-`; `0` leaves namespaces; `1` deletes targeted namespaces. |
 | `K8S_CONFIRM_PRODUCTION_CLEANUP` | Non-preview cleanup yes | `0` | Set to `1` to permit cleanup in a non-preview namespace. |
 
 ## Limitations

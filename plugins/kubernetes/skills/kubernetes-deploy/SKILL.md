@@ -70,7 +70,7 @@ Cleanup is part of the workflow. Use it when the user asks to tear down a previe
 bash "$skill_dir/scripts/cleanup.sh" /path/to/project
 ```
 
-By default, cleanup deletes generated preview resources and auto-deletes namespaces that carry Codex labels and match `K8S_PREVIEW_NAMESPACE_PREFIX`. For non-preview namespaces, it refuses unless `K8S_CONFIRM_PRODUCTION_CLEANUP=1` is set.
+By default, cleanup deletes generated preview resources and auto-deletes namespaces that carry Codex labels and begin with `K8S_PREVIEW_NAMESPACE_PREFIX-`. For non-preview namespaces, it refuses unless `K8S_CONFIRM_PRODUCTION_CLEANUP=1` is set.
 
 ## Production
 

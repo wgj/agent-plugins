@@ -77,6 +77,8 @@ while IFS= read -r NAMESPACE; do
 
   IS_PREVIEW_NAMESPACE=false
   k8s_namespace_has_preview_prefix "$NAMESPACE" "$PREVIEW_PREFIX" && IS_PREVIEW_NAMESPACE=true
+  IS_GENERATED_PREVIEW_NAMESPACE=false
+  k8s_namespace_is_generated_preview "$NAMESPACE" "$PREVIEW_PREFIX" && IS_GENERATED_PREVIEW_NAMESPACE=true
 
   if [ "$IS_PREVIEW_NAMESPACE" != true ] && [ "${K8S_CONFIRM_PRODUCTION_CLEANUP:-0}" != "1" ]; then
     k8s_die "Refusing to clean namespace '$NAMESPACE' because it does not start with K8S_PREVIEW_NAMESPACE_PREFIX='$PREVIEW_PREFIX'. Set K8S_CONFIRM_PRODUCTION_CLEANUP=1 if this is intentional."
@@ -86,7 +88,7 @@ while IFS= read -r NAMESPACE; do
   kubectl delete deployment,service,ingress -n "$NAMESPACE" -l "$SELECTOR" --ignore-not-found >&2
   DELETED_RESOURCES="${DELETED_RESOURCES}${NAMESPACE} "
 
-  if [ "$DELETE_NAMESPACE" = "1" ] || { [ "$DELETE_NAMESPACE" = "auto" ] && [ "$IS_PREVIEW_NAMESPACE" = true ] && [ "$MANAGED" = "codex" ]; }; then
+  if [ "$DELETE_NAMESPACE" = "1" ] || { [ "$DELETE_NAMESPACE" = "auto" ] && [ "$IS_GENERATED_PREVIEW_NAMESPACE" = true ] && [ "$MANAGED" = "codex" ]; }; then
     k8s_info "Deleting preview namespace: $NAMESPACE"
     kubectl delete namespace "$NAMESPACE" --ignore-not-found >&2
     DELETED_NAMESPACES="${DELETED_NAMESPACES}${NAMESPACE} "

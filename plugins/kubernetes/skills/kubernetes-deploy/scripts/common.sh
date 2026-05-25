@@ -86,6 +86,12 @@ k8s_namespace_has_preview_prefix() {
   [ "$namespace" = "$prefix" ] || [[ "$namespace" == "$prefix"-* ]]
 }
 
+k8s_namespace_is_generated_preview() {
+  local namespace="$1"
+  local prefix="$2"
+  [[ "$namespace" == "$prefix"-* ]]
+}
+
 k8s_image_tag() {
   local project_path="$1"
   local tag=""

@@ -43,7 +43,7 @@ The deploy scripts use environment variables so Codex can adapt to local Kuberne
 
 | Variable | Required | Default | Purpose |
 | --- | --- | --- | --- |
-| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled namespaces matching `K8S_PREVIEW_NAMESPACE_PREFIX`; `0` leaves namespaces; `1` deletes targeted namespaces. |
+| `K8S_DELETE_NAMESPACE` | No | `auto` | `auto` deletes Codex-labeled generated namespaces beginning with `K8S_PREVIEW_NAMESPACE_PREFIX-`; `0` leaves namespaces; `1` deletes targeted namespaces. |
 | `K8S_CONFIRM_PRODUCTION_CLEANUP` | Non-preview cleanup yes | `0` | Set to `1` to permit cleanup in a non-preview namespace. |
 
 ## Local Cluster Notes
