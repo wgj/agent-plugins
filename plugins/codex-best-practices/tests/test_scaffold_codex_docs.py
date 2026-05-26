@@ -78,6 +78,7 @@ class MakeTargetsTest(unittest.TestCase):
                         "test: CFLAGS += -g",
                         "build: private LDFLAGS = -lm",
                         "lint: override TOOL := ruff",
+                        "typecheck:: CHECK_FLAGS += --strict",
                     ]
                 ),
                 encoding="utf-8",
@@ -89,6 +90,7 @@ class MakeTargetsTest(unittest.TestCase):
         self.assertEqual(targets, set())
         self.assertNotIn("make test", commands["test"])
         self.assertNotIn("make build", commands["build"])
+        self.assertNotIn("make typecheck", commands["typecheck"])
 
     def test_gnu_immediate_recursive_assignments_are_not_make_targets(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
