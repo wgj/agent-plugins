@@ -135,10 +135,10 @@ When a repo repeats a workflow, document it in the right place:
 Use the scaffold script from this skill directory when useful:
 
 ```bash
-python scripts/scaffold_codex_docs.py /path/to/project
-python scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review"
-python scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review" --plan-title "Implement Buyer Intake Review"
-python scripts/scaffold_codex_docs.py /path/to/project --with-config-example --with-code-review-file
+python3 scripts/scaffold_codex_docs.py /path/to/project
+python3 scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review"
+python3 scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review" --plan-title "Implement Buyer Intake Review"
+python3 scripts/scaffold_codex_docs.py /path/to/project --with-config-example --with-code-review-file
 ```
 
 The script is intentionally conservative:

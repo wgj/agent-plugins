@@ -13,7 +13,7 @@ Create the destination-project guidance needed for "Plan first for difficult tas
 2. Use the scaffold helper for missing baseline docs. Resolve this path relative to this skill directory:
 
 ```bash
-python ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
+python3 ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
 ```
 
 3. Preserve stricter local plan contracts. Do not replace a mature `PLANS.md`; extend it.

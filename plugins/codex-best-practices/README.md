@@ -26,13 +26,13 @@ Use it when a project needs durable context that a cold-start Codex session can 
 From a target project root:
 
 ```bash
-python /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py .
+python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py .
 ```
 
 Create a spec and matching active ExecPlan:
 
 ```bash
-python /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
+python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
   --spec-title "Buyer Intake Review" \
   --plan-title "Implement Buyer Intake Review"
 ```
@@ -40,7 +40,7 @@ python /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts
 Create optional Codex config and review files:
 
 ```bash
-python /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
+python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
   --with-config-example \
   --with-code-review-file
 ```

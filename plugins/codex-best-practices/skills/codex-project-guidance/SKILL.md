@@ -19,7 +19,7 @@ Create the destination-project guidance needed for these Codex best-practices se
 2. Run the scaffold helper if the project is missing the Codex docs envelope. Resolve this path relative to this skill directory:
 
 ```bash
-python ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
+python3 ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
 ```
 
 3. Keep `AGENTS.md` concise. It should route future agents to focused docs and name the commands, constraints, and done criteria that matter most.

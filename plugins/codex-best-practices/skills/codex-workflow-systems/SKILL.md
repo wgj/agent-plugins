@@ -19,7 +19,7 @@ Create the destination-project guidance needed for the context-heavy Codex best 
 2. Run the scaffold helper if the project is missing the Codex docs envelope. Resolve this path relative to this skill directory:
 
 ```bash
-python ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
+python3 ../codex-best-practices/scripts/scaffold_codex_docs.py /path/to/project
 ```
 
 3. Update `docs/codex/mcp.md` with external systems that deserve MCP access. Record purpose, sensitivity, authentication owner, and why MCP beats checked-in docs.
