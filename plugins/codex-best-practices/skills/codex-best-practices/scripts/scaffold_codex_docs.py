@@ -65,12 +65,12 @@ def ensure_directory(path: Path, root: Path) -> None:
 
 
 def package_runner(root: Path) -> str:
+    if (root / "bun.lockb").exists() or (root / "bun.lock").exists():
+        return "bun run"
     if (root / "pnpm-lock.yaml").exists():
         return "pnpm"
     if (root / "yarn.lock").exists():
         return "yarn"
-    if (root / "bun.lockb").exists() or (root / "bun.lock").exists():
-        return "bun run"
     return "npm run"
 
 

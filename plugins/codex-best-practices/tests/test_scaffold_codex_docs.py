@@ -70,5 +70,19 @@ class MakeTargetsTest(unittest.TestCase):
         self.assertIn("make build", commands["build"])
 
 
+class PackageRunnerTest(unittest.TestCase):
+    def test_bun_lock_takes_precedence_over_legacy_lockfiles(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "package.json").write_text('{"scripts":{"test":"bun test"}}', encoding="utf-8")
+            (root / "bun.lock").write_text("", encoding="utf-8")
+            (root / "pnpm-lock.yaml").write_text("", encoding="utf-8")
+            (root / "yarn.lock").write_text("", encoding="utf-8")
+
+            commands = scaffold_codex_docs.detect_commands(root)
+
+        self.assertEqual(commands["test"], ["bun run test"])
+
+
 if __name__ == "__main__":
     unittest.main()
