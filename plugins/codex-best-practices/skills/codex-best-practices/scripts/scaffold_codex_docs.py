@@ -13,6 +13,10 @@ from pathlib import Path
 AGENTS_MARKER = "<!-- codex-best-practices:docs -->"
 MAKE_TARGET_RE = re.compile(r"^([A-Za-z0-9_.-]+)\s*:")
 MAKE_VARIABLE_ASSIGNMENT_RE = re.compile(r"^[A-Za-z0-9_.-]+\s*(?:::?=|\+=|\?=|!=|=)")
+MAKE_TARGET_VARIABLE_ASSIGNMENT_RE = re.compile(
+    r"^[A-Za-z0-9_.-]+\s*:\s*(?:private\s+|export\s+|unexport\s+|override\s+)*"
+    r"[A-Za-z0-9_.-]+\s*(?:::?=|\+=|\?=|!=|=)"
+)
 
 
 def slugify(value: str) -> str:
@@ -83,6 +87,8 @@ def make_targets(root: Path) -> set[str]:
         if line.startswith(("\t", " ", ".", "#")):
             continue
         if MAKE_VARIABLE_ASSIGNMENT_RE.match(line):
+            continue
+        if MAKE_TARGET_VARIABLE_ASSIGNMENT_RE.match(line):
             continue
         match = MAKE_TARGET_RE.match(line)
         if match:

@@ -69,6 +69,27 @@ class MakeTargetsTest(unittest.TestCase):
         self.assertIn("make test", commands["test"])
         self.assertIn("make build", commands["build"])
 
+    def test_target_specific_variable_assignments_are_not_make_targets(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "Makefile").write_text(
+                "\n".join(
+                    [
+                        "test: CFLAGS += -g",
+                        "build: private LDFLAGS = -lm",
+                        "lint: override TOOL := ruff",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            targets = scaffold_codex_docs.make_targets(root)
+            commands = scaffold_codex_docs.detect_commands(root)
+
+        self.assertEqual(targets, set())
+        self.assertNotIn("make test", commands["test"])
+        self.assertNotIn("make build", commands["build"])
+
 
 class PackageRunnerTest(unittest.TestCase):
     def test_bun_lock_takes_precedence_over_legacy_lockfiles(self) -> None:
