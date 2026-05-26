@@ -284,7 +284,7 @@ Use this file as the proof surface when auditing whether the repository has adop
 | --- | --- | --- |
 | Strong first use: Context and prompts | `docs/codex/prompting.md`; `AGENTS.md` routes substantial tasks to Goal / Context / Constraints / Done when | `codex-project-guidance` |
 | Plan first for difficult tasks | `docs/PLANS.md`; `docs/exec-plans/README.md`; active ExecPlans when work is multi-step | `codex-planning-docs` |
-| Make guidance reusable with `AGENTS.md` | concise `AGENTS.md` plus links to focused docs instead of repeated prompt rules | `codex-project-guidance` |
+| Make guidance reusable with AGENTS.md | concise `AGENTS.md` plus links to focused docs instead of repeated prompt rules | `codex-project-guidance` |
 | Configure Codex for consistency | `docs/codex/configuration.md`; optional `.codex/config.example.toml`; documented sandbox, approval, model, profile, and MCP decisions | `codex-project-guidance` |
 | Improve reliability with testing and review | `docs/codex/validation-and-review.md`; detected commands; optional `code_review.md`; done criteria | `codex-project-guidance` |
 | Use MCPs for external context | `docs/codex/mcp.md` records external systems, sensitivity, owner, and why MCP is better than docs | `codex-workflow-systems` |
