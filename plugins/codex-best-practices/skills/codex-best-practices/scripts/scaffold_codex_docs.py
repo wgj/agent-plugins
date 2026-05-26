@@ -18,6 +18,13 @@ MAKE_TARGET_VARIABLE_ASSIGNMENT_RE = re.compile(
     r"^[A-Za-z0-9_.-]+\s*:\s*(?:private\s+|export\s+|unexport\s+|override\s+)*"
     rf"[A-Za-z0-9_.-]+\s*{MAKE_ASSIGNMENT_OPERATOR_PATTERN}"
 )
+MAKE_TARGET_COMMAND_MAP = {
+    "build": ("build",),
+    "test": ("test",),
+    "lint": ("lint",),
+    "typecheck": ("typecheck", "type-check", "check-types"),
+    "format": ("format", "format-check", "check-format", "format-ci"),
+}
 
 
 def slugify(value: str) -> str:
@@ -152,10 +159,11 @@ def detect_commands(root: Path) -> dict[str, list[str]]:
         commands["test"].append("pytest")
 
     targets = make_targets(root)
-    if "build" in targets:
-        commands["build"].append("make build")
-    if "test" in targets:
-        commands["test"].append("make test")
+    for bucket, target_names in MAKE_TARGET_COMMAND_MAP.items():
+        for target_name in target_names:
+            if target_name in targets:
+                commands[bucket].append(f"make {target_name}")
+                break
 
     if (root / "go.mod").exists():
         commands["test"].append("go test ./...")

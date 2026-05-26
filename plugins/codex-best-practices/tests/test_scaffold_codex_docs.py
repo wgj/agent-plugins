@@ -110,6 +110,26 @@ class MakeTargetsTest(unittest.TestCase):
         self.assertNotIn("make test", commands["test"])
         self.assertNotIn("make build", commands["build"])
 
+    def test_validation_make_targets_are_detected(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "Makefile").write_text(
+                "\n".join(
+                    [
+                        "lint:",
+                        "typecheck:",
+                        "format:",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            commands = scaffold_codex_docs.detect_commands(root)
+
+        self.assertEqual(commands["lint"], ["make lint"])
+        self.assertEqual(commands["typecheck"], ["make typecheck"])
+        self.assertEqual(commands["format"], ["make format"])
+
 
 class PackageRunnerTest(unittest.TestCase):
     def test_bun_lock_takes_precedence_over_legacy_lockfiles(self) -> None:
