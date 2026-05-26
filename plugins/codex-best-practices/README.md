@@ -45,4 +45,4 @@ python /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts
   --with-code-review-file
 ```
 
-The script writes only missing scaffold files by default. Existing files are preserved unless `--overwrite` is passed for a newly requested spec or plan path.
+The script writes only missing scaffold files by default. Existing files are preserved unless `--overwrite` is passed for a newly requested spec or plan path, with one routing exception: if an existing `AGENTS.md` does not contain the Codex best-practices marker, the script appends a short guidance section instead of replacing the file.
