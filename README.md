@@ -6,6 +6,7 @@ Personal Codex plugin marketplace for small, focused agent plugins.
 
 - `kubernetes`: deploy applications to Kubernetes with preview-first defaults, port-forward exposure, rollout checks, status inspection, and cleanup.
 - `goal-prompt-builder`: create concise Codex Goal Mode prompts from rough objectives.
+- `codex-best-practices`: bootstrap Codex best-practice docs, project guidance, product specs, ExecPlans, reusable workflow notes, and validation/review contracts.
 
 ## Marketplace
 
