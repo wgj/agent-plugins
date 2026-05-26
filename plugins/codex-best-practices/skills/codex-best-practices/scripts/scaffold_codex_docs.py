@@ -11,11 +11,12 @@ from pathlib import Path
 
 
 AGENTS_MARKER = "<!-- codex-best-practices:docs -->"
+MAKE_ASSIGNMENT_OPERATOR_PATTERN = r"(?:\:\:\:\=|\:\:\=|\:\=|\+=|\?=|!=|=)"
 MAKE_TARGET_RE = re.compile(r"^([A-Za-z0-9_.-]+)\s*:")
-MAKE_VARIABLE_ASSIGNMENT_RE = re.compile(r"^[A-Za-z0-9_.-]+\s*(?:::?=|\+=|\?=|!=|=)")
+MAKE_VARIABLE_ASSIGNMENT_RE = re.compile(rf"^[A-Za-z0-9_.-]+\s*{MAKE_ASSIGNMENT_OPERATOR_PATTERN}")
 MAKE_TARGET_VARIABLE_ASSIGNMENT_RE = re.compile(
     r"^[A-Za-z0-9_.-]+\s*:\s*(?:private\s+|export\s+|unexport\s+|override\s+)*"
-    r"[A-Za-z0-9_.-]+\s*(?:::?=|\+=|\?=|!=|=)"
+    rf"[A-Za-z0-9_.-]+\s*{MAKE_ASSIGNMENT_OPERATOR_PATTERN}"
 )
 
 
