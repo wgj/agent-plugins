@@ -24,16 +24,16 @@ In that pattern, specs preserve product intent and active ExecPlans preserve cur
 
 | OpenAI guidance | Repo artifact this plugin creates or revises |
 | --- | --- |
-| Strong first use: Goal, Context, Constraints, Done when | `docs/codex/prompting.md`, plus a short `AGENTS.md` routing note |
-| Plan first for difficult tasks | `docs/PLANS.md`, `docs/exec-plans/README.md`, and active ExecPlans |
-| Make guidance reusable with `AGENTS.md` | lean project-local `AGENTS.md` section linking to focused docs |
-| Configure Codex for consistency | `docs/codex/configuration.md` and optional `.codex/config.example.toml` |
-| Improve reliability with testing and review | `docs/codex/validation-and-review.md` and optional `code_review.md` |
-| Use MCPs for external context | `docs/codex/mcp.md` |
-| Turn repeatable work into skills | `docs/codex/skills.md` |
-| Use automations for repeated work | `docs/codex/automations.md` |
-| Organize long-running work with session controls | `docs/codex/sessions-and-subagents.md` |
-| Avoid common mistakes | folded into `AGENTS.md` and each guide's guardrails |
+| Strong first use: Goal, Context, Constraints, Done when | `codex-project-guidance` creates `docs/codex/prompting.md`, plus a short `AGENTS.md` routing note |
+| Plan first for difficult tasks | `codex-planning-docs` creates `docs/PLANS.md`, `docs/exec-plans/README.md`, and active ExecPlans |
+| Make guidance reusable with `AGENTS.md` | `codex-project-guidance` keeps project-local `AGENTS.md` lean and links to focused docs |
+| Configure Codex for consistency | `codex-project-guidance` creates `docs/codex/configuration.md` and optional `.codex/config.example.toml` |
+| Improve reliability with testing and review | `codex-project-guidance` creates `docs/codex/validation-and-review.md` and optional `code_review.md` |
+| Use MCPs for external context | `codex-workflow-systems` creates or revises `docs/codex/mcp.md` |
+| Turn repeatable work into skills | `codex-workflow-systems` creates or revises `docs/codex/skills.md` |
+| Use automations for repeated work | `codex-workflow-systems` creates or revises `docs/codex/automations.md` |
+| Organize long-running work with session controls | `codex-workflow-systems` creates or revises `docs/codex/sessions-and-subagents.md` |
+| Avoid common mistakes | all focused skills update `AGENTS.md`, `docs/codex/best-practices-audit.md`, and guide guardrails |
 
 ## Docs Map Pattern
 

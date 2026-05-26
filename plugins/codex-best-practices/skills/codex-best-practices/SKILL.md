@@ -9,6 +9,12 @@ Create durable, repo-native Codex project guidance that a cold-start session can
 
 Read `references/source-guidance.md` when you need the source-derived rules, section contracts, or starter snippets. Use `scripts/scaffold_codex_docs.py` when a project is missing the standard docs scaffolding or when a first-pass skeleton will save time.
 
+This plugin also includes focused destination-project skills. Use them when the user asks for a narrower pass or when the broad setup needs deeper project context:
+
+- `codex-project-guidance`: AGENTS.md, prompting, configuration, validation, and review.
+- `codex-planning-docs`: Plan mode guidance, PLANS.md, product specs, and ExecPlans.
+- `codex-workflow-systems`: MCP, skill candidates, automations, sessions, worktrees, and subagents.
+
 ## Inputs To Gather
 
 Before writing, identify:
@@ -32,8 +38,9 @@ Ask only when the missing answer would change the document shape or create the w
 7. Decide what belongs in MCP, skills, and automations. Use MCP for live external context, skills for repeatable methods, and automations only after a workflow is stable manually.
 8. Add or revise product specs as durable product intent, not task queues. Add or revise ExecPlans as self-contained implementation documents.
 9. Cross-link docs. Specs point to plans through `Implemented By`; plans name source specs; `AGENTS.md` points to the detailed docs rather than duplicating them.
-10. Validate. Run repository-native checks when they exist. If no validator exists, inspect required headings, repo-relative links, and best-practice coverage manually.
-11. Report created or changed files, validation result, and any assumptions that remain unverified.
+10. Confirm coverage against `docs/codex/best-practices-audit.md`. If the repo needs local context for a row, inspect the current project before marking it covered.
+11. Validate. Run repository-native checks when they exist. If no validator exists, inspect required headings, repo-relative links, and best-practice coverage manually.
+12. Report created or changed files, validation result, and any assumptions that remain unverified.
 
 ## Best-Practices Coverage
 

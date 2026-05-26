@@ -255,6 +255,7 @@ Use these files to keep `AGENTS.md` concise while preserving detailed guidance f
 ## Guide Map
 
 - `prompting.md`: task shape, clarification, and done criteria.
+- `best-practices-audit.md`: checklist mapping OpenAI's best practices to this repository's docs.
 - `configuration.md`: repo-specific Codex setup and config decisions.
 - `validation-and-review.md`: tests, checks, manual verification, and review behavior.
 - `mcp.md`: when external systems should be connected through MCP.
@@ -265,6 +266,39 @@ Use these files to keep `AGENTS.md` concise while preserving detailed guidance f
 ## Operating Rule
 
 Prefer moving stable, repeated instructions from chat into checked-in guidance. Keep `AGENTS.md` as the router and keep detailed methods in focused docs or skills.
+"""
+
+
+def best_practices_audit_md(project_name: str) -> str:
+    return f"""# Codex Best Practices Audit
+
+This checklist maps OpenAI's Codex best-practices guidance to {project_name}.
+
+Source: https://developers.openai.com/codex/learn/best-practices#plan-first-for-difficult-tasks
+
+Use this file as the proof surface when auditing whether the repository has adopted the practices. Mark a row complete only after checking the current project state, not merely because the scaffold created a placeholder.
+
+## Coverage
+
+| Practice | Destination-project evidence | Owning skill |
+| --- | --- | --- |
+| Strong first use: Context and prompts | `docs/codex/prompting.md`; `AGENTS.md` routes substantial tasks to Goal / Context / Constraints / Done when | `codex-project-guidance` |
+| Plan first for difficult tasks | `docs/PLANS.md`; `docs/exec-plans/README.md`; active ExecPlans when work is multi-step | `codex-planning-docs` |
+| Make guidance reusable with `AGENTS.md` | concise `AGENTS.md` plus links to focused docs instead of repeated prompt rules | `codex-project-guidance` |
+| Configure Codex for consistency | `docs/codex/configuration.md`; optional `.codex/config.example.toml`; documented sandbox, approval, model, profile, and MCP decisions | `codex-project-guidance` |
+| Improve reliability with testing and review | `docs/codex/validation-and-review.md`; detected commands; optional `code_review.md`; done criteria | `codex-project-guidance` |
+| Use MCPs for external context | `docs/codex/mcp.md` records external systems, sensitivity, owner, and why MCP is better than docs | `codex-workflow-systems` |
+| Turn repeatable work into skills | `docs/codex/skills.md`; `.agents/skills/` candidates for repeated workflows | `codex-workflow-systems` |
+| Use automations for repeated work | `docs/codex/automations.md`; stable recurring workflow candidates with confirmation gates | `codex-workflow-systems` |
+| Organize long-running work with session controls | `docs/codex/sessions-and-subagents.md`; thread, fork, compact, worktree, and subagent guidance | `codex-workflow-systems` |
+| Avoid common mistakes | guardrails in `AGENTS.md` and focused docs for prompt overload, missing tests, skipped planning, loose permissions, overlapping live threads, premature automation, and one-thread-per-project sprawl | all focused skills |
+
+## Audit Notes
+
+- Checked by:
+- Date:
+- Gaps found:
+- Follow-up docs or skills needed:
 """
 
 
@@ -760,6 +794,7 @@ def ensure_scaffold(
 
     write_if_missing(root / "docs/README.md", root, docs_readme(project_name), created, skipped)
     write_if_missing(root / "docs/codex/README.md", root, codex_readme(project_name), created, skipped)
+    write_if_missing(root / "docs/codex/best-practices-audit.md", root, best_practices_audit_md(project_name), created, skipped)
     write_if_missing(root / "docs/codex/prompting.md", root, prompting_md(project_name), created, skipped)
     write_if_missing(root / "docs/codex/configuration.md", root, configuration_md(project_name), created, skipped)
     write_if_missing(root / "docs/codex/validation-and-review.md", root, validation_review_md(project_name, commands), created, skipped)
