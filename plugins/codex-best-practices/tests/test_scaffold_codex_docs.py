@@ -164,5 +164,87 @@ class PackageRunnerTest(unittest.TestCase):
         self.assertEqual(commands["test"], ["bun run test"])
 
 
+class ScaffoldSmokeTest(unittest.TestCase):
+    def test_scaffold_writes_detected_validation_commands_and_agents_guidance_once(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            (root / "AGENTS.md").write_text("# Existing Guidance\n", encoding="utf-8")
+            (root / "package.json").write_text(
+                '{"scripts":{"build":"vite build","test":"bun test"}}',
+                encoding="utf-8",
+            )
+            (root / "bun.lock").write_text("", encoding="utf-8")
+            (root / "Makefile").write_text(
+                "\n".join(
+                    [
+                        "lint:",
+                        "typecheck:",
+                        "format:",
+                        "format-check:",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            created: list[str] = []
+            skipped: list[str] = []
+            scaffold_codex_docs.ensure_scaffold(
+                root,
+                "Example App",
+                created,
+                skipped,
+                with_config_example=True,
+                with_code_review_file=True,
+            )
+            scaffold_codex_docs.ensure_scaffold(
+                root,
+                "Example App",
+                created=[],
+                skipped=[],
+                with_config_example=True,
+                with_code_review_file=True,
+            )
+
+            validation = (root / "docs/codex/validation-and-review.md").read_text(encoding="utf-8")
+            agents = (root / "AGENTS.md").read_text(encoding="utf-8")
+            config_example_exists = (root / ".codex/config.example.toml").is_file()
+            code_review_exists = (root / "code_review.md").is_file()
+
+        self.assertIn("`bun run build`", validation)
+        self.assertIn("`bun run test`", validation)
+        self.assertIn("`make lint`", validation)
+        self.assertIn("`make typecheck`", validation)
+        self.assertIn("`make format-check`", validation)
+        self.assertNotIn("`make format`", validation)
+        self.assertEqual(agents.count(scaffold_codex_docs.AGENTS_MARKER), 1)
+        self.assertTrue(any(path.endswith("docs/codex/validation-and-review.md") for path in created))
+        self.assertTrue(config_example_exists)
+        self.assertTrue(code_review_exists)
+
+
+class PathSafetyTest(unittest.TestCase):
+    def test_write_requested_refuses_symlink_escape(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            sandbox = Path(tmpdir).resolve()
+            root = sandbox / "repo"
+            outside = sandbox / "outside"
+            root.mkdir()
+            outside.mkdir()
+            (root / "linked").symlink_to(outside, target_is_directory=True)
+
+            with self.assertRaises(ValueError):
+                scaffold_codex_docs.write_requested(
+                    root / "linked/escape.md",
+                    root,
+                    "nope",
+                    overwrite=False,
+                    created=[],
+                    skipped=[],
+                )
+            escaped_path_exists = (outside / "escape.md").exists()
+
+        self.assertFalse(escaped_path_exists)
+
+
 if __name__ == "__main__":
     unittest.main()
