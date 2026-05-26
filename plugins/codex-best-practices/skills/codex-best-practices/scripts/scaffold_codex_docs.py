@@ -11,6 +11,8 @@ from pathlib import Path
 
 
 AGENTS_MARKER = "<!-- codex-best-practices:docs -->"
+MAKE_TARGET_RE = re.compile(r"^([A-Za-z0-9_.-]+)\s*:")
+MAKE_VARIABLE_ASSIGNMENT_RE = re.compile(r"^[A-Za-z0-9_.-]+\s*(?:::?=|\+=|\?=|!=|=)")
 
 
 def slugify(value: str) -> str:
@@ -80,7 +82,9 @@ def make_targets(root: Path) -> set[str]:
     for line in makefile.read_text(encoding="utf-8", errors="ignore").splitlines():
         if line.startswith(("\t", " ", ".", "#")):
             continue
-        match = re.match(r"^([A-Za-z0-9_.-]+)\s*:", line)
+        if MAKE_VARIABLE_ASSIGNMENT_RE.match(line):
+            continue
+        match = MAKE_TARGET_RE.match(line)
         if match:
             targets.add(match.group(1))
     return targets
