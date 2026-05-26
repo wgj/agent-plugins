@@ -42,9 +42,13 @@ jobs:
       - name: Check whitespace
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
         run: |
           if [ -n "$BASE_SHA" ]; then
             git diff --check "$BASE_SHA...HEAD"
+          elif [ -n "$BEFORE_SHA" ] && [ "$BEFORE_SHA" != "0000000000000000000000000000000000000000" ]; then
+            git diff --check "$BEFORE_SHA..$AFTER_SHA"
           else
-            git diff-tree --check --no-commit-id --root -r HEAD
+            git diff-tree --check --no-commit-id --root -r "$AFTER_SHA"
           fi
