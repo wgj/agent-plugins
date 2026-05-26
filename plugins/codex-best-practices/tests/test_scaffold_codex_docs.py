@@ -132,6 +132,23 @@ class MakeTargetsTest(unittest.TestCase):
         self.assertEqual(commands["typecheck"], ["make typecheck"])
         self.assertEqual(commands["format"], ["make format"])
 
+    def test_make_format_check_target_is_preferred_over_mutating_format(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir)
+            (root / "Makefile").write_text(
+                "\n".join(
+                    [
+                        "format:",
+                        "format-check:",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            commands = scaffold_codex_docs.detect_commands(root)
+
+        self.assertEqual(commands["format"], ["make format-check"])
+
 
 class PackageRunnerTest(unittest.TestCase):
     def test_bun_lock_takes_precedence_over_legacy_lockfiles(self) -> None:

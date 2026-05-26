@@ -23,7 +23,7 @@ MAKE_TARGET_COMMAND_MAP = {
     "test": ("test",),
     "lint": ("lint",),
     "typecheck": ("typecheck", "type-check", "check-types"),
-    "format": ("format", "format-check", "check-format", "format-ci"),
+    "format": ("format-check", "check-format", "format-ci", "format"),
 }
 
 
