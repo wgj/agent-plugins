@@ -24,17 +24,21 @@ Install the marketplace from GitHub:
 codex plugin marketplace add https://github.com/wgj/agent-plugins --ref main
 ```
 
-Then install a plugin:
+Install every plugin advertised by the `wgj` marketplace:
 
 ```bash
+codex plugin add goal-prompt-builder@wgj
 codex plugin add kubernetes@wgj
+codex plugin add codex-best-practices@wgj
 ```
 
 For local development, add this checkout as the marketplace source instead:
 
 ```bash
 codex plugin marketplace add /path/to/agent-plugins
+codex plugin add goal-prompt-builder@wgj
 codex plugin add kubernetes@wgj
+codex plugin add codex-best-practices@wgj
 ```
 
 ## Global AGENTS.md
