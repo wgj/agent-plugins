@@ -1,7 +1,7 @@
 {
   "name": "codex-best-practices",
   "version": "0.1.0",
-  "description": "Bootstrap Codex best-practice guidance, product specs, ExecPlans, validation docs, and reusable workflows.",
+  "description": "Bootstrap Codex best-practice guidance, product specs, ExecPlans, wave plans, validation docs, and reusable workflows.",
   "author": {
     "name": "Weston Johnson",
     "url": "https://github.com/wgj"
@@ -14,6 +14,7 @@
     "agents-md",
     "best-practices",
     "execplan",
+    "waves",
     "product-spec",
     "planning",
     "skills",
@@ -24,7 +25,7 @@
   "interface": {
     "displayName": "Codex Best Practices",
     "shortDescription": "Bootstrap Codex best practices.",
-    "longDescription": "Creates or revises repository-local Codex operating docs, AGENTS.md guidance, product specs, ExecPlans, validation and review guidance, MCP decision notes, skill candidates, automation candidates, and session/subagent practices so cold-start Codex sessions can work from checked-in project context.",
+    "longDescription": "Creates or revises repository-local Codex operating docs, AGENTS.md guidance, product specs, ExecPlans, ExecPlan wave coordination, validation and review guidance, MCP decision notes, skill candidates, automation candidates, and session/subagent practices so cold-start Codex sessions can work from checked-in project context.",
     "developerName": "Weston Johnson",
     "category": "Productivity",
     "capabilities": [
@@ -36,6 +37,7 @@
     "defaultPrompt": [
       "Bootstrap Codex best practices in this repo.",
       "Audit this repo's Codex guidance.",
+      "Create ExecPlan waves for this multi-plan project.",
       "Promote this spec into an active ExecPlan."
     ]
   }

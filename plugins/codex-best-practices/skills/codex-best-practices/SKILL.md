@@ -13,6 +13,7 @@ This plugin also includes focused destination-project skills. Use them when the 
 
 - `codex-project-guidance`: AGENTS.md, prompting, configuration, validation, and review.
 - `codex-planning-docs`: Plan mode guidance, PLANS.md, product specs, and ExecPlans.
+- `codex-exec-waves`: sequencing, status, completion evidence, and subagent guidance across multiple ExecPlans.
 - `codex-workflow-systems`: MCP, skill candidates, automations, sessions, worktrees, and subagents.
 
 ## Inputs To Gather
@@ -20,7 +21,7 @@ This plugin also includes focused destination-project skills. Use them when the 
 Before writing, identify:
 
 - target repository root
-- whether the user wants a broad Codex setup, a focused audit, docs scaffolding, a product spec, an ExecPlan, or a spec-to-plan promotion
+- whether the user wants a broad Codex setup, a focused audit, docs scaffolding, a product spec, an ExecPlan, multi-ExecPlan waves, or a spec-to-plan promotion
 - project-specific conventions already present in `AGENTS.md`, `.codex/config.toml`, `docs/README.md`, `docs/SPECS.md`, `docs/PLANS.md`, `docs/exec-plans/README.md`, review docs, workflow docs, or existing skills
 - product objective, audience or workflow, non-goals, and acceptance signals
 - likely implementation surfaces, commands, validation checks, external context sources, repeated workflows, and recurring automation candidates
@@ -33,7 +34,7 @@ Ask only when the missing answer would change the document shape or create the w
 2. Preserve local conventions. If the project already has stricter section names, validation scripts, lifecycle rules, or team-owned docs, extend those instead of replacing them.
 3. Add missing cold-start scaffolding when needed. Keep `AGENTS.md` lean and routing-oriented; put detailed contracts in focused docs under `docs/` or `.agents/skills/`.
 4. Make prompt expectations explicit. Capture the task shape Codex should ask for or infer: Goal, Context, Constraints, and Done when.
-5. Make planning explicit. For hard or multi-step work, point to `docs/PLANS.md` and active ExecPlans instead of relying on chat-only plans.
+5. Make planning explicit. For hard or multi-step work, point to `docs/PLANS.md` and active ExecPlans instead of relying on chat-only plans. For initiatives with several dependent ExecPlans, create or revise `docs/exec-plans/WAVES.md`.
 6. Make validation and review explicit. Name tests, lint/type checks, manual checks, diff review expectations, and what done means.
 7. Decide what belongs in MCP, skills, and automations. Use MCP for live external context, skills for repeatable methods, and automations only after a workflow is stable manually.
 8. Add or revise product specs as durable product intent, not task queues. Add or revise ExecPlans as self-contained implementation documents.
@@ -48,7 +49,7 @@ When the user asks to "implement Codex best practices", cover these areas unless
 
 - `AGENTS.md`: lean routing guidance, repo layout, run/test commands, conventions, constraints, done criteria, and links to deeper docs.
 - Prompting: a reusable Goal / Context / Constraints / Done when task shape.
-- Planning: when to use Plan mode, when to create an ExecPlan, and how plans stay current.
+- Planning: when to use Plan mode, when to create an ExecPlan, when to coordinate several ExecPlans with waves, and how plans stay current.
 - Configuration: where personal defaults, repo defaults, sandboxing, approvals, MCP, profiles, and local environment notes belong. Prefer documenting `.codex/config.toml` choices; do not change user-level config without an explicit request.
 - Validation and review: test, lint, typecheck, manual behavior, and diff-review expectations, plus a stable review checklist.
 - MCP: decision notes for external, frequently changing, or tool-backed context.
@@ -139,11 +140,13 @@ python3 scripts/scaffold_codex_docs.py /path/to/project
 python3 scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review"
 python3 scripts/scaffold_codex_docs.py /path/to/project --spec-title "Buyer Intake Review" --plan-title "Implement Buyer Intake Review"
 python3 scripts/scaffold_codex_docs.py /path/to/project --with-config-example --with-code-review-file
+python3 scripts/scaffold_codex_docs.py /path/to/project --with-waves
 ```
 
 The script is intentionally conservative:
 
 - it creates missing docs contracts, Codex best-practice guides, and directories
+- it can create an optional `docs/exec-plans/WAVES.md` coordination doc for multi-ExecPlan initiatives
 - it appends an `AGENTS.md` routing section only when the marker is absent
 - it does not overwrite existing scaffold files
 - it creates requested spec or plan files only when missing unless `--overwrite` is passed
