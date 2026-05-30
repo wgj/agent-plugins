@@ -41,6 +41,18 @@
       "category": "Productivity"
     },
     {
+      "name": "quo-call-transcripts",
+      "source": {
+        "source": "local",
+        "path": "./plugins/quo-call-transcripts"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    },
+    {
       "name": "summarize",
       "source": {
         "source": "local",

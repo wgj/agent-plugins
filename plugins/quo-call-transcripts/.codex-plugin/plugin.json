@@ -1,0 +1,26 @@
+{
+  "name": "quo-call-transcripts",
+  "version": "0.1.0",
+  "description": "Fetch Quo call recordings for project contacts, transcribe them with OpenAI, and write project-local call transcript and summary files.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Quo Call Transcripts",
+    "shortDescription": "Turn relevant Quo calls into project notes.",
+    "longDescription": "Matches Quo calls against a project root PEOPLE.md dossier, downloads relevant call recordings, transcribes audio with OpenAI, and writes transcript and summary markdown files under the project root.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "Automation"
+    ],
+    "defaultPrompt": [
+      "Transcribe the latest Quo call for this project.",
+      "Set up this project for Quo call transcript automation.",
+      "Find relevant Quo calls from PEOPLE.md and write call notes."
+    ]
+  }
+}
