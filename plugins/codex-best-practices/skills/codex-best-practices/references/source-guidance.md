@@ -155,6 +155,8 @@ Active plans live under:
 docs/exec-plans/active/
 ```
 
+Name plan files with a stable three-digit prefix plus a short slug, such as `001-user-auth-foundation.md`. The prefix is an identifier and sort key; `docs/exec-plans/WAVES.md` is canonical for cross-plan sequencing and parallelism.
+
 Completed plans move to:
 
 ```text

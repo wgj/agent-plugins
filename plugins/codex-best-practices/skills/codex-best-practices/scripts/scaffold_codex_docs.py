@@ -11,6 +11,7 @@ from pathlib import Path
 
 
 AGENTS_MARKER = "<!-- codex-best-practices:docs -->"
+EXEC_PLAN_FILENAME_RE = re.compile(r"^(\d{3})-.+\.md$")
 MAKE_ASSIGNMENT_OPERATOR_PATTERN = r"(?:\:\:\:\=|\:\:\=|\:\=|\+=|\?=|!=|=)"
 MAKE_TARGET_RE = re.compile(r"^([A-Za-z0-9_.-]+)\s*:")
 MAKE_VARIABLE_ASSIGNMENT_RE = re.compile(rf"^[A-Za-z0-9_.-]+\s*{MAKE_ASSIGNMENT_OPERATOR_PATTERN}")
@@ -30,6 +31,54 @@ MAKE_TARGET_COMMAND_MAP = {
 def slugify(value: str) -> str:
     slug = re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-")
     return slug or "untitled"
+
+
+def normalize_plan_id(value: str) -> str:
+    if not re.fullmatch(r"\d{1,3}", value):
+        raise ValueError("--plan-id must be a number from 1 to 999")
+    plan_id = int(value)
+    if plan_id < 1:
+        raise ValueError("--plan-id must be a number from 1 to 999")
+    return f"{plan_id:03d}"
+
+
+def existing_exec_plan_paths(root: Path) -> list[Path]:
+    paths: list[Path] = []
+    for directory in (root / "docs/exec-plans/active", root / "docs/exec-plans/completed"):
+        if directory.is_dir():
+            paths.extend(sorted(directory.glob("*.md")))
+    return paths
+
+
+def next_exec_plan_id(root: Path) -> str:
+    max_id = 0
+    for path in existing_exec_plan_paths(root):
+        match = EXEC_PLAN_FILENAME_RE.match(path.name)
+        if match:
+            max_id = max(max_id, int(match.group(1)))
+    return f"{max_id + 1:03d}"
+
+
+def exec_plan_path(root: Path, title: str, plan_id: str | None = None) -> Path:
+    slug = slugify(title)
+    active_dir = root / "docs/exec-plans/active"
+    if plan_id is None and active_dir.is_dir():
+        existing_active = sorted(active_dir.glob(f"???-{slug}.md"))
+        if existing_active:
+            return existing_active[0]
+        legacy_active = active_dir / f"{slug}.md"
+        if legacy_active.is_file():
+            return legacy_active
+
+    normalized_id = normalize_plan_id(plan_id) if plan_id else next_exec_plan_id(root)
+    candidate = active_dir / f"{normalized_id}-{slug}.md"
+    if plan_id:
+        for path in existing_exec_plan_paths(root):
+            match = EXEC_PLAN_FILENAME_RE.match(path.name)
+            if match and match.group(1) == normalized_id and path != candidate:
+                existing = repo_path(path, root)
+                raise ValueError(f"--plan-id {normalized_id} already belongs to {existing}")
+    return candidate
 
 
 def utc_date() -> str:
@@ -638,6 +687,8 @@ Validation is mandatory. Say what tests to run, what manual checks matter, what 
 
 Active plans live in `docs/exec-plans/active/`. Completed plans move to `docs/exec-plans/completed/`.
 
+Name ExecPlan files with a stable three-digit prefix plus a short slug, such as `001-user-auth-foundation.md`. The prefix is an identifier and sort key, not the canonical dependency order. For multi-plan initiatives, `docs/exec-plans/WAVES.md` is the source of truth for sequencing and parallelism.
+
 If a PR implements an active ExecPlan, the same PR should update that plan. If the plan is finished, move it to `completed/` in the same PR and update related specs or architecture docs when reality changed.
 """
 
@@ -649,13 +700,15 @@ This directory is the repo-native location for Codex ExecPlans.
 
 Start from `AGENTS.md`, then `docs/README.md`, then `docs/PLANS.md`, then this README, then the relevant active ExecPlan under `docs/exec-plans/active/`.
 
-For multi-plan initiatives, read `docs/exec-plans/WAVES.md` when it exists. It should explain sequencing, blockers, parallelism, current wave status, and completion evidence.
+For multi-plan initiatives, read `docs/exec-plans/WAVES.md` when it exists. It is the canonical source for sequencing, blockers, parallelism, current wave status, and completion evidence.
 
 ## Active Plans
 
 Active ExecPlans live in `docs/exec-plans/active/`.
 
 Use the relevant active plan as the source of truth for current milestone state, dependencies, next implementation slices, and validation criteria.
+
+Name active ExecPlans with a stable three-digit prefix, such as `001-user-auth-foundation.md`. Keep that prefix when moving the file to `completed/`.
 
 ## Completed Plans
 
@@ -673,7 +726,7 @@ def exec_plan_waves_md(project_name: str) -> str:
     date = utc_date()
     return f"""# {project_name} ExecPlan Waves
 
-Use this file when one initiative spans multiple ExecPlans that need explicit sequencing, dependency tracking, or parallel-work guidance.
+Use this file when one initiative spans multiple ExecPlans that need explicit sequencing, dependency tracking, or parallel-subagent guidance.
 
 Cold-start order: `AGENTS.md` -> `docs/README.md` -> `docs/PLANS.md` -> `docs/exec-plans/README.md` -> this file -> current wave ExecPlan(s).
 
@@ -690,7 +743,7 @@ Current wave: Wave 1, Discovery (Ready)
 
 Statuses: `Blocked`, `Ready`, `Active`, `Complete`.
 
-Trust repo evidence over this table if they differ. Update this table in the same change and record the discrepancy in the relevant ExecPlan.
+Trust repo evidence over this table if they differ. If filename order, an individual ExecPlan, or chat history conflicts with this file, treat this file as canonical for cross-plan sequencing and update the stale source in the same change.
 
 ## Completion Rules
 
@@ -705,7 +758,7 @@ Before marking a wave `Complete`:
 ## Operating Rules
 
 - Complete earlier waves before relying on later-wave implementation.
-- If a wave has multiple ExecPlans, use subagents for disjoint bounded work.
+- In this file, "parallel" means use subagents when they are available, with one agent per disjoint ExecPlan or ownership area.
 - Main agent stays on the critical path; delegate sidecar research, separate implementation slices, QA, or review.
 - Give every worker clear file or area ownership. Workers must not revert unrelated changes.
 - Do not implement blocked surfaces before the dependency named in this file is resolved.
@@ -714,7 +767,7 @@ Before marking a wave `Complete`:
 
 ### Wave 1: Discovery
 
-Plans: TODO: add one or more `docs/exec-plans/active/*.md` paths.
+Plans: TODO: add one or more `docs/exec-plans/active/NNN-*.md` paths.
 
 Parallelism: Mostly sequential until scope, risks, and dependencies are clear.
 
@@ -724,7 +777,7 @@ Exit: TODO: name the decision record, spec update, prototype, or validation evid
 
 Plans: TODO: add foundation ExecPlan paths.
 
-Parallelism: Parallelize only when file ownership is disjoint and the data/API contracts are clear.
+Parallelism: Use subagents only when file ownership is disjoint and the data/API contracts are clear.
 
 Exit: TODO: name the build, schema, routes, integration, or test evidence that proves later waves can start.
 
@@ -922,12 +975,21 @@ def main() -> int:
     parser.add_argument("--project-name", help="Human-readable project name; defaults to directory name")
     parser.add_argument("--spec-title", help="Create a product spec skeleton with this title")
     parser.add_argument("--plan-title", help="Create an active ExecPlan skeleton with this title")
+    parser.add_argument("--plan-id", help="Optional numeric ExecPlan prefix to use with --plan-title, such as 004")
     parser.add_argument("--strategy-fit", default="TODO: State the strategy fit.", help="Initial text for the spec Strategy Fit section")
     parser.add_argument("--with-config-example", action="store_true", help="Create .codex/config.example.toml")
     parser.add_argument("--with-code-review-file", action="store_true", help="Create a root code_review.md checklist")
     parser.add_argument("--with-waves", action="store_true", help="Create docs/exec-plans/WAVES.md for multi-ExecPlan coordination")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite requested spec or plan files if they already exist")
     args = parser.parse_args()
+
+    if args.plan_id and not args.plan_title:
+        parser.error("--plan-id requires --plan-title")
+    if args.plan_id:
+        try:
+            args.plan_id = normalize_plan_id(args.plan_id)
+        except ValueError as exc:
+            parser.error(str(exc))
 
     root = Path(args.project_root).expanduser().resolve()
     project_name = args.project_name or root.name
@@ -947,7 +1009,10 @@ def main() -> int:
     plan_repo_path: str | None = None
     plan_path: Path | None = None
     if args.plan_title:
-        plan_path = root / "docs/exec-plans/active" / f"{slugify(args.plan_title)}.md"
+        try:
+            plan_path = exec_plan_path(root, args.plan_title, args.plan_id)
+        except ValueError as exc:
+            parser.error(str(exc))
         plan_repo_path = repo_path(plan_path, root)
 
     spec_repo_path: str | None = None

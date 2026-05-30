@@ -7,7 +7,7 @@ description: "Create or revise ExecPlan wave coordination docs for multi-plan in
 
 Create or revise `docs/exec-plans/WAVES.md` as the coordination layer above several ExecPlans.
 
-Use waves when one initiative needs multiple active plans that should not all start at once. A wave doc says what must happen first, what can run in parallel, what is blocked, what evidence proves a wave is complete, and how future Codex sessions should pick up the work.
+Use waves when one initiative needs multiple active plans that should not all start at once. A wave doc says what must happen first, what can run in parallel via subagents when available, what is blocked, what evidence proves a wave is complete, and how future Codex sessions should pick up the work.
 
 ## When To Use
 
@@ -39,7 +39,7 @@ Identify:
 - all active plans that belong to it
 - completed prerequisite plans
 - hard blockers and soft ordering preferences
-- which plans can run in parallel
+- which plans can run in parallel through subagents, when available
 - which files, systems, or decisions each plan owns
 - exit evidence for each wave
 - validation commands or manual checks that prove wave completion
@@ -48,7 +48,7 @@ Identify:
 
 1. Preserve local conventions. If `docs/exec-plans/WAVES.md` already exists, revise it instead of replacing it.
 2. Group plans by dependency, risk, and feedback loop. Put policy, architecture, data model, and foundation work before user-facing surfaces that rely on them.
-3. Keep each wave small enough to understand. A wave can contain one plan when sequencing is important or several plans when work can safely run in parallel.
+3. Keep each wave small enough to understand. A wave can contain one plan when sequencing is important or several plans when work can safely run in parallel through subagents, when available.
 4. Mark every wave with one of these statuses: `Blocked`, `Ready`, `Active`, or `Complete`.
 5. Set `Current wave` to the first non-complete wave that is unblocked or actively being worked.
 6. In the status table, use evidence that points to repo artifacts, not chat memory.
@@ -82,7 +82,7 @@ Current wave: Wave N, <Name>
 
 Statuses: `Blocked`, `Ready`, `Active`, `Complete`.
 
-Trust repo evidence over this table if they differ. Update this table in the same change and record the discrepancy in the relevant ExecPlan.
+Trust repo evidence over this table if they differ. If filename order, an individual ExecPlan, or chat history conflicts with this file, treat this file as canonical for cross-plan sequencing and update the stale source in the same change.
 
 ## Completion Rules
 
@@ -97,7 +97,7 @@ Before marking a wave `Complete`:
 ## Operating Rules
 
 - Complete earlier waves before relying on later-wave implementation.
-- If a wave has multiple ExecPlans, use subagents for disjoint bounded work.
+- In this file, "parallel" means use subagents when they are available, with one agent per disjoint ExecPlan or ownership area.
 - Main agent stays on the critical path; delegate sidecar research, separate implementation slices, QA, or review.
 - Give every worker clear file or area ownership. Workers must not revert unrelated changes.
 - Do not implement blocked surfaces before the dependency named in this file is resolved.
@@ -106,9 +106,9 @@ Before marking a wave `Complete`:
 
 ### Wave 1: <Name>
 
-Plans: `<plan path>`
+Plans: `docs/exec-plans/active/001-plan-slug.md`
 
-Parallelism: <sequential or parallel guidance>.
+Parallelism: <sequential guidance, or parallel subagent guidance when subagents are available>.
 
 Exit: <observable evidence that this wave is done>.
 
@@ -116,7 +116,7 @@ Exit: <observable evidence that this wave is done>.
 
 Plans: `<plan path>`, `<plan path>`
 
-Parallelism: <which plans can run concurrently and what must stay coordinated>.
+Parallelism: <which plans can run concurrently through subagents, when available, and what must stay coordinated>.
 
 Exit: <observable evidence that this wave is done>.
 
