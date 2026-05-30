@@ -1,11 +1,11 @@
 ---
-name: quo-call-transcripts
-description: Fetch and transcribe Quo business-phone call recordings for the current Codex project by matching Quo call participants against a structured PEOPLE.md file at the project root, then write calls/<date>-<person>/transcript.md and summary.md with audio retained locally but ignored by Git.
+name: call-notes
+description: Fetch and transcribe business-phone call recordings for the current Codex project by matching call participants against a structured PEOPLE.md file at the project root, then write calls/<date>-<person>/transcript.md and summary.md with audio retained locally but ignored by Git.
 ---
 
-# Quo Call Transcripts
+# Call Notes
 
-Use this skill when the user asks to transcribe, fetch, summarize, or inspect Quo phone calls for the current project.
+Use this skill when the user asks to transcribe, fetch, summarize, or inspect phone calls for the current project.
 
 ## Project Contract
 
@@ -36,10 +36,10 @@ Do not use a Codex-specific OpenAI keychain fallback.
 Run commands from any project root or pass `--project-root`.
 
 ```bash
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py doctor
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py init-people
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py list-numbers
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py transcribe-latest
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py doctor
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py init-people
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py list-numbers
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py transcribe-latest
 ```
 
 Useful options:
@@ -47,7 +47,7 @@ Useful options:
 - `--quo-number +17203034975` selects the visible Quo business number and resolves the internal Quo `PN...` phone number ID.
 - `--phone-number-id PN...` skips discovery when the internal ID is already known.
 - `--created-after 2026-05-30T00:00:00Z` limits call search.
-- `--call-id CA...` processes a specific Quo call ID.
+- `--call-id CA...` processes a specific provider call ID.
 - `--dry-run` lists matching calls without downloading or transcribing.
 - `--force` regenerates existing transcript and summary files.
 

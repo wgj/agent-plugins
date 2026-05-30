@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Project-local Quo call recording transcription helper."""
+"""Project-local call recording transcription helper."""
 
 from __future__ import annotations
 
@@ -52,7 +52,7 @@ class Person:
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Fetch and transcribe project-relevant Quo call recordings.")
+    parser = argparse.ArgumentParser(description="Fetch and transcribe project-relevant call recordings.")
 
     def add_common_options(target: argparse.ArgumentParser, defaults: bool) -> None:
         suppress = argparse.SUPPRESS
@@ -80,7 +80,7 @@ def parse_args() -> argparse.Namespace:
             default=None if defaults else suppress,
             help="Only search calls created before this ISO 8601 timestamp.",
         )
-        target.add_argument("--call-id", default=None if defaults else suppress, help="Process one specific Quo call ID.")
+        target.add_argument("--call-id", default=None if defaults else suppress, help="Process one specific provider call ID.")
         target.add_argument(
             "--max-results",
             type=int,
@@ -349,7 +349,7 @@ def get_recordings(quo_key: str, call_id: str) -> list[dict[str, Any]]:
 
 def slugify(value: str) -> str:
     value = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
-    return value[:64] or "quo-call"
+    return value[:64] or "call"
 
 
 def parse_time(value: str | None) -> datetime:
@@ -576,7 +576,7 @@ def transcribe_audio(openai_key: str, audio_path: Path, people: list[Person]) ->
 
 def call_metadata_markdown(call: dict[str, Any], person: Person) -> str:
     fields = [
-        ("Quo call ID", call.get("id")),
+        ("Provider call ID", call.get("id")),
         ("Matched contact", person.label),
         ("Matched phone", person.phone),
         ("Direction", call.get("direction")),

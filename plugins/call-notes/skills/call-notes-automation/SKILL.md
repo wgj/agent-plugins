@@ -1,18 +1,18 @@
 ---
-name: quo-call-transcript-automation
-description: Set up and operate Codex Automations that periodically run Quo call transcription for a project, using PEOPLE.md as the project-local relevance filter and writing calls/<date>-<person>/transcript.md and summary.md outputs.
+name: call-notes-automation
+description: Set up and operate Codex Automations that periodically generate call notes for a project, using PEOPLE.md as the project-local relevance filter and writing calls/<date>-<person>/transcript.md and summary.md outputs.
 ---
 
-# Quo Call Transcript Automation
+# Call Notes Automation
 
-Use this skill when the user wants recurring Quo call transcription for a Codex project or wants to prepare a project for scheduled call-note generation.
+Use this skill when the user wants recurring call-note generation for a Codex project or wants to prepare a project for scheduled call-note generation.
 
 ## Automation Shape
 
 Each Codex project should run its own automation from that project's root. The automation should call:
 
 ```bash
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py transcribe-latest \
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py transcribe-latest \
   --project-root /path/to/project \
   --created-after <recent ISO timestamp>
 ```
@@ -48,11 +48,11 @@ The helper script adds `calls/**/audio/` to `.gitignore` when it writes retained
 After a call, run the same script manually from the project root:
 
 ```bash
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py transcribe-latest
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py transcribe-latest
 ```
 
 For a specific call, use:
 
 ```bash
-python3 /path/to/agent-plugins/plugins/quo-call-transcripts/scripts/quo_calls.py transcribe-latest --call-id CA...
+python3 /path/to/agent-plugins/plugins/call-notes/scripts/call_notes.py transcribe-latest --call-id CA...
 ```
