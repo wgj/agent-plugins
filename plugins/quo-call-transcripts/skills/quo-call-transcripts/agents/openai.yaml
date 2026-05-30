@@ -1,0 +1,4 @@
+interface:
+  display_name: "Quo Call Transcripts"
+  short_description: "Transcribe project-relevant Quo calls."
+  default_prompt: "Transcribe the latest Quo call for this project."
