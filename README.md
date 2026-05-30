@@ -7,6 +7,7 @@ Personal Codex plugin marketplace for small, focused agent plugins.
 - `kubernetes`: deploy applications to Kubernetes with preview-first defaults, port-forward exposure, rollout checks, status inspection, and cleanup.
 - `goal-prompt-builder`: create concise Codex Goal Mode prompts from rough objectives.
 - `codex-best-practices`: bootstrap Codex best-practice docs, project guidance, product specs, ExecPlans, ExecPlan waves, reusable workflow notes, and validation/review contracts.
+- `summarize`: use the Summarize CLI to summarize and extract content from URLs, videos, PDFs, and local files.
 
 ## Marketplace
 
@@ -30,6 +31,7 @@ Install every plugin advertised by the `wgj` marketplace:
 codex plugin add goal-prompt-builder@wgj
 codex plugin add kubernetes@wgj
 codex plugin add codex-best-practices@wgj
+codex plugin add summarize@wgj
 ```
 
 For local development, add this checkout as the marketplace source instead:
@@ -39,6 +41,7 @@ codex plugin marketplace add /path/to/agent-plugins
 codex plugin add goal-prompt-builder@wgj
 codex plugin add kubernetes@wgj
 codex plugin add codex-best-practices@wgj
+codex plugin add summarize@wgj
 ```
 
 ## Global AGENTS.md
