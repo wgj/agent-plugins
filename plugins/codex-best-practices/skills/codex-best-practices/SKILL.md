@@ -83,8 +83,8 @@ No ExecPlan yet.
 Use `Implemented By` to prevent duplicate work. If an active or completed plan exists, replace `No ExecPlan yet.` with repo-relative links such as:
 
 ```md
-- Active ExecPlan: docs/exec-plans/active/<slug>.md
-- Completed ExecPlan: docs/exec-plans/completed/<slug>.md
+- Active ExecPlan: docs/exec-plans/active/001-<slug>.md
+- Completed ExecPlan: docs/exec-plans/completed/001-<slug>.md
 ```
 
 After the shared opening skeleton, add sections that fit the work, such as `User Journey`, `Data Contract`, `UI Boundaries`, `Policy Rules`, `Out of Scope`, or `Open Questions`.
@@ -121,6 +121,8 @@ When adding project-local instructions, keep them short. Add a routing section t
 - which external tools need MCPs, which workflows should become skills, and which stable workflows may become automations
 
 Do not turn `AGENTS.md` into the entire contract. Link to focused docs that own the detail.
+
+ExecPlan filenames should use a stable three-digit prefix plus a short slug, such as `001-user-auth-foundation.md`. Treat that prefix as an identifier and sort key; for multi-plan initiatives, `docs/exec-plans/WAVES.md` owns the canonical answer for sequencing and parallel subagent work.
 
 ## Reusable Workflows
 

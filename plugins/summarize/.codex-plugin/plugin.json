@@ -1,0 +1,38 @@
+{
+  "name": "summarize",
+  "version": "0.1.0",
+  "description": "Use the Summarize CLI from Codex to summarize and extract content from URLs, videos, PDFs, and local files.",
+  "author": {
+    "name": "Weston Johnson",
+    "url": "https://github.com/wgj"
+  },
+  "homepage": "https://summarize.sh",
+  "repository": "https://github.com/wgj/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "summarize",
+    "summarize.sh",
+    "transcription",
+    "youtube",
+    "pdf",
+    "article",
+    "extraction"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Summarize",
+    "shortDescription": "Summarize links, videos, PDFs, and files.",
+    "longDescription": "Use the local Summarize CLI from Codex to summarize URLs, articles, YouTube videos, podcasts, transcripts, PDFs, and local files, with extraction, JSON output, and provider-key guidance.",
+    "developerName": "Weston Johnson",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive"
+    ],
+    "websiteURL": "https://summarize.sh",
+    "defaultPrompt": [
+      "Use Summarize to summarize this URL.",
+      "Use Summarize to extract the transcript from this YouTube video.",
+      "Use Summarize to summarize this local PDF."
+    ]
+  }
+}
