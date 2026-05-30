@@ -1,0 +1,4 @@
+interface:
+  display_name: "Summarize"
+  short_description: "Summarize links, videos, PDFs, and files"
+  default_prompt: "Use $summarize to summarize this URL."

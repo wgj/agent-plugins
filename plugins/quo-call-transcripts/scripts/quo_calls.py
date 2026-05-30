@@ -11,6 +11,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 import textwrap
 import urllib.error
 import urllib.parse
@@ -27,6 +28,8 @@ QUO_API_BASE = "https://api.openphone.com/v1"
 OPENAI_API_BASE = "https://api.openai.com/v1"
 DEFAULT_TRANSCRIBE_MODEL = "gpt-4o-mini-transcribe"
 DEFAULT_SUMMARY_MODEL = "gpt-5-mini"
+OPENAI_TRANSCRIPTION_LIMIT_BYTES = 25_000_000
+TRANSCRIPTION_CHUNK_TARGET_BYTES = 20_000_000
 
 
 class ConfigError(RuntimeError):
@@ -436,7 +439,7 @@ def multipart_body(fields: dict[str, str], file_field: str, file_path: Path) -> 
     return b"".join(chunks), boundary
 
 
-def transcribe_audio(openai_key: str, audio_path: Path, people: list[Person]) -> str:
+def transcribe_audio_chunk(openai_key: str, audio_path: Path, people: list[Person]) -> str:
     model = os.environ.get("OPENAI_TRANSCRIBE_MODEL", DEFAULT_TRANSCRIBE_MODEL)
     prompt_names = ", ".join(person.label for person in people if person.label)[:1200]
     fields = {
@@ -469,6 +472,106 @@ def transcribe_audio(openai_key: str, audio_path: Path, people: list[Person]) ->
     if isinstance(text, str) and text.strip():
         return text.strip()
     return json.dumps(data, indent=2)
+
+
+def require_audio_chunker(audio_path: Path) -> None:
+    missing = [tool for tool in ("ffmpeg", "ffprobe") if not shutil.which(tool)]
+    if missing:
+        tools = ", ".join(missing)
+        size_mb = audio_path.stat().st_size / 1_000_000
+        raise RuntimeError(
+            f"{audio_path} is {size_mb:.1f} MB, which is above OpenAI's 25 MB transcription upload limit. "
+            f"Install {tools} so the helper can split large recordings before transcription."
+        )
+
+
+def audio_duration_seconds(audio_path: Path) -> float:
+    result = subprocess.run(
+        [
+            "ffprobe",
+            "-v",
+            "error",
+            "-show_entries",
+            "format=duration",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            str(audio_path),
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    try:
+        duration = float(result.stdout.strip())
+    except ValueError as exc:
+        raise RuntimeError(f"Could not determine audio duration for {audio_path}") from exc
+    if duration <= 0:
+        raise RuntimeError(f"Could not determine a positive audio duration for {audio_path}")
+    return duration
+
+
+def split_audio_for_transcription(audio_path: Path, chunk_dir: Path) -> list[Path]:
+    if audio_path.stat().st_size <= OPENAI_TRANSCRIPTION_LIMIT_BYTES:
+        return [audio_path]
+
+    require_audio_chunker(audio_path)
+    duration = audio_duration_seconds(audio_path)
+    chunk_count = max(2, (audio_path.stat().st_size + TRANSCRIPTION_CHUNK_TARGET_BYTES - 1) // TRANSCRIPTION_CHUNK_TARGET_BYTES)
+    segment_seconds = max(15.0, duration / chunk_count)
+
+    for _ in range(6):
+        for old_chunk in chunk_dir.glob("chunk-*.mp3"):
+            old_chunk.unlink()
+        pattern = chunk_dir / "chunk-%03d.mp3"
+        subprocess.run(
+            [
+                "ffmpeg",
+                "-y",
+                "-v",
+                "error",
+                "-i",
+                str(audio_path),
+                "-vn",
+                "-ac",
+                "1",
+                "-ar",
+                "16000",
+                "-b:a",
+                "48k",
+                "-f",
+                "segment",
+                "-segment_time",
+                f"{segment_seconds:.3f}",
+                "-reset_timestamps",
+                "1",
+                str(pattern),
+            ],
+            check=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        chunks = sorted(chunk_dir.glob("chunk-*.mp3"))
+        if chunks and all(chunk.stat().st_size <= OPENAI_TRANSCRIPTION_LIMIT_BYTES for chunk in chunks):
+            return chunks
+        segment_seconds = max(15.0, segment_seconds / 2)
+
+    largest_mb = max((chunk.stat().st_size for chunk in chunk_dir.glob("chunk-*.mp3")), default=0) / 1_000_000
+    raise RuntimeError(
+        f"Could not split {audio_path} into chunks below OpenAI's 25 MB transcription upload limit "
+        f"(largest chunk: {largest_mb:.1f} MB)."
+    )
+
+
+def transcribe_audio(openai_key: str, audio_path: Path, people: list[Person]) -> str:
+    if audio_path.stat().st_size <= OPENAI_TRANSCRIPTION_LIMIT_BYTES:
+        return transcribe_audio_chunk(openai_key, audio_path, people)
+
+    with tempfile.TemporaryDirectory(prefix="quo-transcription-chunks-") as tmpdir:
+        chunks = split_audio_for_transcription(audio_path, Path(tmpdir))
+        transcripts = [transcribe_audio_chunk(openai_key, chunk, people) for chunk in chunks]
+    return "\n\n".join(f"[Part {index}]\n{text}" for index, text in enumerate(transcripts, start=1))
 
 
 def call_metadata_markdown(call: dict[str, Any], person: Person) -> str:
