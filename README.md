@@ -36,17 +36,6 @@ codex plugin add quo-call-transcripts@wgj
 codex plugin add summarize@wgj
 ```
 
-For local development, add this checkout as the marketplace source instead:
-
-```bash
-codex plugin marketplace add /path/to/agent-plugins
-codex plugin add goal-prompt-builder@wgj
-codex plugin add kubernetes@wgj
-codex plugin add codex-best-practices@wgj
-codex plugin add quo-call-transcripts@wgj
-codex plugin add summarize@wgj
-```
-
 ## Global AGENTS.md
 
 The source-controlled copy of the global Codex guidance lives at:
