@@ -217,9 +217,34 @@ class ScaffoldSmokeTest(unittest.TestCase):
         self.assertIn("`make format-check`", validation)
         self.assertNotIn("`make format`", validation)
         self.assertEqual(agents.count(scaffold_codex_docs.AGENTS_MARKER), 1)
+        self.assertIn("docs/exec-plans/WAVES.md", agents)
         self.assertTrue(any(path.endswith("docs/codex/validation-and-review.md") for path in created))
         self.assertTrue(config_example_exists)
         self.assertTrue(code_review_exists)
+
+    def test_scaffold_can_write_optional_waves_coordination_doc(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            created: list[str] = []
+            skipped: list[str] = []
+
+            scaffold_codex_docs.ensure_scaffold(
+                root,
+                "Example App",
+                created,
+                skipped,
+                with_config_example=False,
+                with_code_review_file=False,
+                with_waves=True,
+            )
+
+            waves = (root / "docs/exec-plans/WAVES.md").read_text(encoding="utf-8")
+
+        self.assertTrue(any(path.endswith("docs/exec-plans/WAVES.md") for path in created))
+        self.assertIn("# Example App ExecPlan Waves", waves)
+        self.assertIn("Current wave: Wave 1, Discovery (Ready)", waves)
+        self.assertIn("Statuses: `Blocked`, `Ready`, `Active`, `Complete`.", waves)
+        self.assertIn("Give every worker clear file or area ownership", waves)
 
 
 class PathSafetyTest(unittest.TestCase):

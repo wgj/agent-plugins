@@ -1,6 +1,6 @@
 # Codex Best Practices
 
-Codex Best Practices bootstraps repository-local Codex operating guidance: `AGENTS.md`, product specs, ExecPlans, validation and review docs, MCP decision notes, skill candidates, automation candidates, and session/subagent practices.
+Codex Best Practices bootstraps repository-local Codex operating guidance: `AGENTS.md`, product specs, ExecPlans, ExecPlan wave coordination, validation and review docs, MCP decision notes, skill candidates, automation candidates, and session/subagent practices.
 
 It is based on OpenAI's [Codex best practices](https://developers.openai.com/codex/learn/best-practices#plan-first-for-difficult-tasks) guidance: start with the right task context, plan before difficult work, make guidance reusable with `AGENTS.md`, configure Codex consistently, validate and review changes, connect external context with MCP, turn repeated workflows into skills, automate stable workflows, and organize long-running work with sessions and subagents.
 
@@ -10,6 +10,7 @@ Use it when a project needs durable context that a cold-start Codex session can 
 
 - a `codex-best-practices` skill for creating or revising Codex project guidance
 - focused destination-project skills for project guidance, planning docs, and workflow systems
+- a focused ExecPlan waves skill for sequencing multi-plan initiatives
 - source guidance distilled from the OpenAI Codex best-practices page, the ExecPlans article, and a private reference project's docs pattern
 - a conservative helper script that initializes missing docs scaffolding, starter best-practice docs, product specs, and active ExecPlans
 - optional examples for `.codex/config.toml` and root-level `code_review.md`
@@ -19,6 +20,7 @@ Use it when a project needs durable context that a cold-start Codex session can 
 - `codex-best-practices`: orchestrates the full best-practices setup or audit.
 - `codex-project-guidance`: inspects a destination project and creates or revises `AGENTS.md`, prompting, configuration, validation, and review guidance.
 - `codex-planning-docs`: creates or revises product specs, `docs/PLANS.md`, and active ExecPlans for plan-first work.
+- `codex-exec-waves`: creates or revises `docs/exec-plans/WAVES.md` for phased multi-ExecPlan initiatives.
 - `codex-workflow-systems`: inspects a destination project for MCP, skill, automation, session, worktree, and subagent guidance.
 
 ## Helper Script
@@ -43,6 +45,13 @@ Create optional Codex config and review files:
 python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
   --with-config-example \
   --with-code-review-file
+```
+
+Create an optional ExecPlan waves coordination doc for a larger initiative:
+
+```bash
+python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/scripts/scaffold_codex_docs.py . \
+  --with-waves
 ```
 
 The script writes only missing scaffold files by default. Existing files are preserved unless `--overwrite` is passed for a newly requested spec or plan path, with one routing exception: if an existing `AGENTS.md` does not contain the Codex best-practices marker, the script appends a short guidance section instead of replacing the file.

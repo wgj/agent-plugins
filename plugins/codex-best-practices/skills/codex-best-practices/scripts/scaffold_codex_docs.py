@@ -199,6 +199,7 @@ This repository keeps Codex operating guidance in checked-in docs so a cold-star
 - Start cold by reading `AGENTS.md`, `docs/README.md`, and `docs/codex/README.md`.
 - Read `docs/SPECS.md` before authoring or revising files under `docs/product-specs/`.
 - Read `docs/PLANS.md` and `docs/exec-plans/README.md` before creating, revising, or implementing an ExecPlan.
+- Read `docs/exec-plans/WAVES.md` before coordinating multiple ExecPlans when that file exists.
 - Keep active ExecPlans under `docs/exec-plans/active/` and completed plans under `docs/exec-plans/completed/`.
 - Keep specs and plans cross-linked: specs use `Implemented By`; plans name the source spec they implement.
 - Follow `docs/codex/validation-and-review.md` before handing back code or docs.
@@ -237,8 +238,9 @@ When starting cold, read in this order:
 4. `docs/SPECS.md` before authoring or revising product specs
 5. `docs/PLANS.md` before creating or implementing ExecPlans
 6. `docs/exec-plans/README.md`
-7. the specific active ExecPlan under `docs/exec-plans/active/`
-8. directly relevant supporting docs
+7. `docs/exec-plans/WAVES.md` when coordinating multiple ExecPlans
+8. the specific active ExecPlan under `docs/exec-plans/active/`
+9. directly relevant supporting docs
 
 ## Directory Roles
 
@@ -647,6 +649,8 @@ This directory is the repo-native location for Codex ExecPlans.
 
 Start from `AGENTS.md`, then `docs/README.md`, then `docs/PLANS.md`, then this README, then the relevant active ExecPlan under `docs/exec-plans/active/`.
 
+For multi-plan initiatives, read `docs/exec-plans/WAVES.md` when it exists. It should explain sequencing, blockers, parallelism, current wave status, and completion evidence.
+
 ## Active Plans
 
 Active ExecPlans live in `docs/exec-plans/active/`.
@@ -662,6 +666,81 @@ Keep them readable. Do not delete the history that explains why the code looks t
 ## Working Rule
 
 If a PR implements an active ExecPlan, the same PR should update that plan. If the plan is finished, move it to `completed/` in that same PR.
+"""
+
+
+def exec_plan_waves_md(project_name: str) -> str:
+    date = utc_date()
+    return f"""# {project_name} ExecPlan Waves
+
+Use this file when one initiative spans multiple ExecPlans that need explicit sequencing, dependency tracking, or parallel-work guidance.
+
+Cold-start order: `AGENTS.md` -> `docs/README.md` -> `docs/PLANS.md` -> `docs/exec-plans/README.md` -> this file -> current wave ExecPlan(s).
+
+Last updated: {date}
+Current wave: Wave 1, Discovery (Ready)
+
+## Status
+
+| Wave | Status | Evidence | Next |
+| --- | --- | --- | --- |
+| 1 Discovery | Ready | Replace with plan paths or decision records. | Confirm scope and dependencies. |
+| 2 Foundation | Blocked | Needs Wave 1. | Wait. |
+| 3 Delivery | Blocked | Needs Wave 2. | Wait. |
+
+Statuses: `Blocked`, `Ready`, `Active`, `Complete`.
+
+Trust repo evidence over this table if they differ. Update this table in the same change and record the discrepancy in the relevant ExecPlan.
+
+## Completion Rules
+
+Before marking a wave `Complete`:
+
+- Verify its exit criteria.
+- Update each wave ExecPlan's `Progress`, `Decision Log`, `Validation and Acceptance`, and `Outcomes & Retrospective`.
+- Move finished ExecPlans to `docs/exec-plans/completed/`; leave blocked ones active with an explicit blocker.
+- Update `Last updated`, `Current wave`, and the status table.
+- Mark the next wave `Active` if continuing immediately, otherwise `Ready`.
+
+## Operating Rules
+
+- Complete earlier waves before relying on later-wave implementation.
+- If a wave has multiple ExecPlans, use subagents for disjoint bounded work.
+- Main agent stays on the critical path; delegate sidecar research, separate implementation slices, QA, or review.
+- Give every worker clear file or area ownership. Workers must not revert unrelated changes.
+- Do not implement blocked surfaces before the dependency named in this file is resolved.
+
+## Waves
+
+### Wave 1: Discovery
+
+Plans: TODO: add one or more `docs/exec-plans/active/*.md` paths.
+
+Parallelism: Mostly sequential until scope, risks, and dependencies are clear.
+
+Exit: TODO: name the decision record, spec update, prototype, or validation evidence that proves this wave is done.
+
+### Wave 2: Foundation
+
+Plans: TODO: add foundation ExecPlan paths.
+
+Parallelism: Parallelize only when file ownership is disjoint and the data/API contracts are clear.
+
+Exit: TODO: name the build, schema, routes, integration, or test evidence that proves later waves can start.
+
+### Wave 3: Delivery
+
+Plans: TODO: add user-facing, integration, admin, or production ExecPlan paths.
+
+Parallelism: Use subagents for independent surfaces, QA, documentation, or review once earlier-wave blockers are resolved.
+
+Exit: TODO: name the observable user or operator behavior and validation evidence that proves delivery is complete.
+
+## Quick Picker
+
+- Missing policy, architecture, or scope decision: Wave 1.
+- Missing foundation, contracts, data model, routes, or scaffolding: Wave 2.
+- Missing user-facing workflows, integrations, admin, or production hardening: Wave 3.
 """
 
 
@@ -796,6 +875,7 @@ def ensure_scaffold(
     skipped: list[str],
     with_config_example: bool,
     with_code_review_file: bool,
+    with_waves: bool = False,
 ) -> None:
     for directory in [
         "docs/codex",
@@ -826,6 +906,9 @@ def ensure_scaffold(
     write_if_missing(root / "docs/exec-plans/README.md", root, exec_plans_readme(), created, skipped)
     append_agents_guidance(root, project_name, created, skipped)
 
+    if with_waves:
+        write_if_missing(root / "docs/exec-plans/WAVES.md", root, exec_plan_waves_md(project_name), created, skipped)
+
     if with_config_example:
         write_if_missing(root / ".codex/config.example.toml", root, config_example(), created, skipped)
 
@@ -842,6 +925,7 @@ def main() -> int:
     parser.add_argument("--strategy-fit", default="TODO: State the strategy fit.", help="Initial text for the spec Strategy Fit section")
     parser.add_argument("--with-config-example", action="store_true", help="Create .codex/config.example.toml")
     parser.add_argument("--with-code-review-file", action="store_true", help="Create a root code_review.md checklist")
+    parser.add_argument("--with-waves", action="store_true", help="Create docs/exec-plans/WAVES.md for multi-ExecPlan coordination")
     parser.add_argument("--overwrite", action="store_true", help="Overwrite requested spec or plan files if they already exist")
     args = parser.parse_args()
 
@@ -857,6 +941,7 @@ def main() -> int:
         skipped,
         args.with_config_example,
         args.with_code_review_file,
+        args.with_waves,
     )
 
     plan_repo_path: str | None = None
