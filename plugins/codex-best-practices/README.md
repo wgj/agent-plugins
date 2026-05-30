@@ -12,7 +12,7 @@ Use it when a project needs durable context that a cold-start Codex session can 
 - focused destination-project skills for project guidance, planning docs, and workflow systems
 - a focused ExecPlan waves skill for sequencing multi-plan initiatives
 - source guidance distilled from the OpenAI Codex best-practices page, the ExecPlans article, and a private reference project's docs pattern
-- a conservative helper script that initializes missing docs scaffolding, starter best-practice docs, product specs, and active ExecPlans
+- a conservative helper script that initializes missing docs scaffolding, starter best-practice docs, product specs, and `001-` prefixed active ExecPlans
 - optional examples for `.codex/config.toml` and root-level `code_review.md`
 
 ## Skills
@@ -38,6 +38,8 @@ python3 /path/to/plugins/codex-best-practices/skills/codex-best-practices/script
   --spec-title "Buyer Intake Review" \
   --plan-title "Implement Buyer Intake Review"
 ```
+
+Requested ExecPlans are created as `docs/exec-plans/active/001-<slug>.md`, incrementing from existing active and completed plan prefixes. Use `--plan-id 004` only when a project needs an explicit prefix.
 
 Create optional Codex config and review files:
 

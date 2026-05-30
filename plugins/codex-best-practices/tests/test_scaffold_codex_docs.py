@@ -164,6 +164,82 @@ class PackageRunnerTest(unittest.TestCase):
         self.assertEqual(commands["test"], ["bun run test"])
 
 
+class ExecPlanFilenameTest(unittest.TestCase):
+    def test_exec_plan_path_allocates_next_three_digit_prefix(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            active = root / "docs/exec-plans/active"
+            completed = root / "docs/exec-plans/completed"
+            active.mkdir(parents=True)
+            completed.mkdir(parents=True)
+            (completed / "001-product-policy.md").write_text("", encoding="utf-8")
+            (active / "002-data-model.md").write_text("", encoding="utf-8")
+
+            plan_path = scaffold_codex_docs.exec_plan_path(root, "Buyer Intake Review")
+
+        self.assertEqual(
+            plan_path,
+            root / "docs/exec-plans/active/003-buyer-intake-review.md",
+        )
+
+    def test_exec_plan_path_reuses_existing_active_prefix_for_same_title(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            active = root / "docs/exec-plans/active"
+            active.mkdir(parents=True)
+            existing = active / "007-buyer-intake-review.md"
+            existing.write_text("", encoding="utf-8")
+
+            plan_path = scaffold_codex_docs.exec_plan_path(root, "Buyer Intake Review")
+
+        self.assertEqual(plan_path, existing)
+
+    def test_exec_plan_path_reuses_legacy_unprefixed_active_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            active = root / "docs/exec-plans/active"
+            active.mkdir(parents=True)
+            existing = active / "buyer-intake-review.md"
+            existing.write_text("", encoding="utf-8")
+
+            plan_path = scaffold_codex_docs.exec_plan_path(root, "Buyer Intake Review")
+
+        self.assertEqual(plan_path, existing)
+
+    def test_explicit_plan_id_is_normalized(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+
+            plan_path = scaffold_codex_docs.exec_plan_path(root, "Buyer Intake Review", "4")
+
+        self.assertEqual(
+            plan_path,
+            root / "docs/exec-plans/active/004-buyer-intake-review.md",
+        )
+
+    def test_explicit_plan_id_rejects_prefix_collision(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            active = root / "docs/exec-plans/active"
+            active.mkdir(parents=True)
+            (active / "004-foundation.md").write_text("", encoding="utf-8")
+
+            with self.assertRaises(ValueError):
+                scaffold_codex_docs.exec_plan_path(root, "Delivery", "004")
+
+    def test_explicit_plan_id_allows_exact_existing_active_plan(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            root = Path(tmpdir).resolve()
+            active = root / "docs/exec-plans/active"
+            active.mkdir(parents=True)
+            existing = active / "004-buyer-intake-review.md"
+            existing.write_text("", encoding="utf-8")
+
+            plan_path = scaffold_codex_docs.exec_plan_path(root, "Buyer Intake Review", "004")
+
+        self.assertEqual(plan_path, existing)
+
+
 class ScaffoldSmokeTest(unittest.TestCase):
     def test_scaffold_writes_detected_validation_commands_and_agents_guidance_once(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -244,6 +320,8 @@ class ScaffoldSmokeTest(unittest.TestCase):
         self.assertIn("# Example App ExecPlan Waves", waves)
         self.assertIn("Current wave: Wave 1, Discovery (Ready)", waves)
         self.assertIn("Statuses: `Blocked`, `Ready`, `Active`, `Complete`.", waves)
+        self.assertIn("canonical for cross-plan sequencing", waves)
+        self.assertIn('"parallel" means use subagents when they are available', waves)
         self.assertIn("Give every worker clear file or area ownership", waves)
 
 
