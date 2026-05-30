@@ -1,0 +1,4 @@
+interface:
+  display_name: "Call Notes Automation"
+  short_description: "Schedule project-local call notes."
+  default_prompt: "Set up call notes automation for this project."

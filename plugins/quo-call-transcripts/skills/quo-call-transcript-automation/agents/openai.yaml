@@ -1,4 +1,0 @@
-interface:
-  display_name: "Quo Call Transcript Automation"
-  short_description: "Schedule project-local Quo call notes."
-  default_prompt: "Set up Quo call transcript automation for this project."

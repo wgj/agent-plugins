@@ -1,0 +1,26 @@
+{
+  "name": "call-notes",
+  "version": "0.1.0",
+  "description": "Turn project-relevant business call recordings into transcripts, summaries, and follow-up notes.",
+  "author": {
+    "name": "Local developer"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Call Notes",
+    "shortDescription": "Turn relevant calls into project notes.",
+    "longDescription": "Matches provider call records against a project root PEOPLE.md dossier, downloads relevant call recordings, transcribes audio with OpenAI, and writes transcript and summary markdown files under the project root.",
+    "developerName": "Local developer",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write",
+      "Automation"
+    ],
+    "defaultPrompt": [
+      "Transcribe the latest call for this project.",
+      "Set up this project for call notes automation.",
+      "Find relevant calls from PEOPLE.md and write call notes."
+    ]
+  }
+}
