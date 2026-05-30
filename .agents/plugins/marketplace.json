@@ -41,10 +41,10 @@
       "category": "Productivity"
     },
     {
-      "name": "quo-call-transcripts",
+      "name": "call-notes",
       "source": {
         "source": "local",
-        "path": "./plugins/quo-call-transcripts"
+        "path": "./plugins/call-notes"
       },
       "policy": {
         "installation": "AVAILABLE",

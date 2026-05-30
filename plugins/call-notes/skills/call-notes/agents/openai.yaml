@@ -1,0 +1,4 @@
+interface:
+  display_name: "Call Notes"
+  short_description: "Transcribe project-relevant calls."
+  default_prompt: "Transcribe the latest call for this project."
