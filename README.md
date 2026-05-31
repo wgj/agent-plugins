@@ -44,7 +44,7 @@ The action runs:
 ./scripts/install-agent-plugins.sh
 ```
 
-That script registers the local checkout as the `wgj` marketplace and enables every plugin listed below in Codex config, so the install surface stays versioned with the repo instead of living as copied README lines.
+That script registers the GitHub marketplace as `wgj` and enables every plugin listed in `.agents/plugins/marketplace.json`, so the install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
 
 ### Manual Setup
 
@@ -56,19 +56,13 @@ Install and enable the marketplace from GitHub with the same setup script:
 curl -fsSL https://raw.githubusercontent.com/wgj/agent-plugins/main/scripts/install-agent-plugins.sh | bash
 ```
 
-Or add the marketplace directly and enable the plugin ids in your Codex config:
+Or add the marketplace directly:
 
 ```bash
 codex plugin marketplace add https://github.com/wgj/agent-plugins --ref main
 ```
 
-Enable these plugin ids under `~/.codex/config.toml`:
-
-- `goal-prompt-builder@wgj`
-- `kubernetes@wgj`
-- `codex-best-practices@wgj`
-- `call-notes@wgj`
-- `summarize@wgj`
+Then enable each plugin id listed in `.agents/plugins/marketplace.json` under `~/.codex/config.toml`.
 
 ## Global AGENTS.md
 
