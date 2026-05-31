@@ -15,6 +15,7 @@ This plugin also includes focused destination-project skills. Use them when the 
 - `codex-planning-docs`: Plan mode guidance, PLANS.md, product specs, and ExecPlans.
 - `codex-exec-waves`: sequencing, status, completion evidence, and subagent guidance across multiple ExecPlans.
 - `codex-workflow-systems`: MCP, skill candidates, automations, sessions, worktrees, and subagents.
+- `codex-keychain-environment`: worktree-safe local secret setup through macOS Keychain and checked-in Codex Environments.
 
 ## Inputs To Gather
 
