@@ -118,6 +118,15 @@ def reject_symlinks(root: Path, label: str) -> None:
                 raise SystemExit(f"{label} contains an unsupported symlink: {path}")
 
 
+def ensure_cache_path(path: Path, label: str) -> None:
+    try:
+        path.resolve(strict=False).relative_to(cache_root.resolve(strict=False))
+    except ValueError as exc:
+        raise SystemExit(f"{label} escapes cache root: {path}") from exc
+    if path.is_symlink():
+        raise SystemExit(f"{label} is an unsupported symlink: {path}")
+
+
 marketplace_name = safe_component(marketplace_name, "Marketplace name")
 plugin_ids: list[str] = []
 cache_installs: list[tuple[str, Path]] = []
@@ -152,14 +161,13 @@ for entry in plugins:
         )
     version = safe_component(version, f"Plugin {plugin_name} version")
 
-    cache_dir = cache_root / marketplace_name / plugin_name / version
-    try:
-        cache_dir.resolve(strict=False).relative_to(cache_root.resolve(strict=False))
-    except ValueError as exc:
-        raise SystemExit(f"Plugin cache path escapes cache root: {cache_dir}") from exc
+    cache_plugin_parent = cache_root / marketplace_name / plugin_name
+    cache_dir = cache_plugin_parent / version
+    ensure_cache_path(cache_plugin_parent, "Plugin cache path")
+    ensure_cache_path(cache_dir, "Plugin cache path")
     reject_symlinks(plugin_source_dir, f"Plugin {plugin_name}")
-    if cache_dir.exists():
-        shutil.rmtree(cache_dir)
+    if cache_plugin_parent.exists():
+        shutil.rmtree(cache_plugin_parent)
     cache_dir.parent.mkdir(parents=True, exist_ok=True)
     shutil.copytree(
         plugin_source_dir,
@@ -183,6 +191,11 @@ def section_bounds(document: str, header_pattern: re.Pattern[str]) -> tuple[int,
     return match.end(), section_end
 
 
+def toml_string_key_pattern(value: str) -> str:
+    escaped = re.escape(value)
+    return "(?:\"" + escaped + "\"|'" + escaped + "')"
+
+
 def enable_inline_plugin_entry(document: str, plugin_id: str) -> tuple[str, bool]:
     plugins_header = re.compile(r"(?m)^\s*\[plugins\]\s*(?:#.*)?$")
     bounds = section_bounds(document, plugins_header)
@@ -192,7 +205,7 @@ def enable_inline_plugin_entry(document: str, plugin_id: str) -> tuple[str, bool
     section_start, section_end = bounds
     section = document[section_start:section_end]
     inline_pattern = re.compile(
-        rf'(?m)^(\s*"{re.escape(plugin_id)}"\s*=\s*\{{)([^}}\n]*)(\}}\s*(?:#.*)?$)'
+        rf"(?m)^(\s*{toml_string_key_pattern(plugin_id)}\s*=\s*\{{)([^}}\n]*)(\}}\s*(?:#.*)?$)"
     )
     match = inline_pattern.search(section)
     if not match:
@@ -279,7 +292,9 @@ def ensure_plugins_feature_enabled(document: str) -> str:
 
 def ensure_plugin_enabled(document: str, plugin_id: str) -> str:
     header = f'[plugins."{plugin_id}"]'
-    header_pattern = re.compile(rf"(?m)^\s*\[plugins\.\"{re.escape(plugin_id)}\"\]\s*(?:#.*)?$")
+    header_pattern = re.compile(
+        rf"(?m)^\s*\[\s*plugins\s*\.\s*{toml_string_key_pattern(plugin_id)}\s*\]\s*(?:#.*)?$"
+    )
     bounds = section_bounds(document, header_pattern)
 
     if not bounds:
