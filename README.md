@@ -44,7 +44,7 @@ The action runs:
 ./scripts/install-agent-plugins.sh
 ```
 
-That script registers the GitHub marketplace as `wgj` and enables every plugin listed in `.agents/plugins/marketplace.json`, so the install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
+That script registers and refreshes the GitHub marketplace as `wgj`, installs every plugin listed in `.agents/plugins/marketplace.json` into the Codex plugin cache, and enables each plugin. The install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
 
 ### Manual Setup
 
@@ -62,7 +62,7 @@ Or add the marketplace directly:
 codex plugin marketplace add https://github.com/wgj/agent-plugins --ref main
 ```
 
-Then enable each plugin id listed in `.agents/plugins/marketplace.json` under `~/.codex/config.toml`.
+Then install and enable each plugin id listed in `.agents/plugins/marketplace.json` under `~/.codex/config.toml`.
 
 ## Global AGENTS.md
 
