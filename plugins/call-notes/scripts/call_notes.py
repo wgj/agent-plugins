@@ -26,8 +26,8 @@ from typing import Any
 DEFAULT_QUO_NUMBER = "+17203034975"
 QUO_API_BASE = "https://api.openphone.com/v1"
 OPENAI_API_BASE = "https://api.openai.com/v1"
-DEFAULT_TRANSCRIBE_MODEL = "gpt-4o-mini-transcribe"
-DEFAULT_SUMMARY_MODEL = "gpt-5-mini"
+DEFAULT_TRANSCRIBE_MODEL = "gpt-4o-transcribe"
+DEFAULT_SUMMARY_MODEL = "gpt-5.5"
 OPENAI_TRANSCRIPTION_LIMIT_BYTES = 25_000_000
 TRANSCRIPTION_CHUNK_TARGET_BYTES = 20_000_000
 

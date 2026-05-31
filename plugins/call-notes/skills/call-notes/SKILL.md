@@ -68,8 +68,8 @@ Keep `transcript.md` and `summary.md` commit-friendly. The helper adds or preser
 ## Defaults
 
 - Visible Quo number: `+17203034975`, unless overridden by `QUO_PHONE_NUMBER` or `--quo-number`.
-- Transcription model: `gpt-4o-mini-transcribe`, override with `OPENAI_TRANSCRIBE_MODEL`.
-- Summary model: `gpt-5-mini`, override with `OPENAI_SUMMARY_MODEL`.
+- Transcription model: `gpt-4o-transcribe`, override with `OPENAI_TRANSCRIBE_MODEL`.
+- Summary model: `gpt-5.5`, override with `OPENAI_SUMMARY_MODEL`.
 - Audio retention: keep audio by default, override with `--no-keep-audio` or `QUO_KEEP_AUDIO=false`.
 
 ## Notes
