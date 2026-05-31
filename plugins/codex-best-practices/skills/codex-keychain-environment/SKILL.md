@@ -89,9 +89,13 @@ Run the relevant subset before handing back:
 bash -n scripts/bootstrap_worktree.sh scripts/<project>-keychain-env.sh
 scripts/<project>-keychain-env.sh check
 scripts/<project>-keychain-env.sh write-env
-scripts/<project>-keychain-env.sh exec -- env
+scripts/<project>-keychain-env.sh exec -- bash -c 'for name in "$@"; do [ -n "${!name:-}" ] || exit 1; printf "%s=present\n" "$name"; done' _ REQUIRED_SECRET_VAR
 git diff --check
 ```
+
+Replace `REQUIRED_SECRET_VAR` with the project's required secret env var names.
+Never validate `exec -- ...` with commands such as `env`, `printenv`, or `set`
+that print secret values.
 
 For helper behavior, create a temporary Keychain service with dummy values and confirm:
 
