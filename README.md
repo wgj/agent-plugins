@@ -9,6 +9,7 @@ Personal Codex plugin marketplace for small, focused agent plugins.
 - `codex-best-practices`: bootstrap Codex best-practice docs, project guidance, product specs, ExecPlans, ExecPlan waves, reusable workflow notes, and validation/review contracts.
 - `call-notes`: match project `PEOPLE.md` contacts to business calls, download recordings, transcribe with OpenAI, and write project-local call transcript and summary files.
 - `summarize`: use the Summarize CLI to summarize and extract content from URLs, videos, PDFs, and local files.
+- `contacts`: create, search, update, upsert, and delete local macOS Contacts records through a native Swift CLI using Apple's Contacts framework.
 
 ## Marketplace
 

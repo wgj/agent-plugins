@@ -1,0 +1,39 @@
+{
+  "name": "contacts",
+  "version": "0.1.0",
+  "description": "Create, read, update, and delete macOS Contacts records through a native Swift CLI.",
+  "author": {
+    "name": "Weston Johnson",
+    "url": "https://github.com/wgj"
+  },
+  "homepage": "https://github.com/wgj/agent-plugins/tree/main/plugins/contacts",
+  "repository": "https://github.com/wgj/agent-plugins",
+  "license": "MIT",
+  "keywords": [
+    "contacts",
+    "macos",
+    "swift",
+    "contacts-framework",
+    "address-book",
+    "json"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Contacts",
+    "shortDescription": "Manage macOS Contacts with a native CLI.",
+    "longDescription": "Create, read, update, upsert, search, and delete Apple Contacts records from Codex through a native Swift command-line helper that uses Contacts.framework and JSON input/output, without UI automation or direct database writes.",
+    "developerName": "Weston Johnson",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Write"
+    ],
+    "websiteURL": "https://github.com/wgj/agent-plugins/tree/main/plugins/contacts",
+    "brandColor": "#0F766E",
+    "defaultPrompt": [
+      "Search my macOS Contacts for this person.",
+      "Dry-run adding these PEOPLE.md contacts to macOS Contacts.",
+      "Update this macOS Contact after confirming the exact record."
+    ]
+  }
+}
