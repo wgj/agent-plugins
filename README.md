@@ -20,21 +20,49 @@ This repo includes a local marketplace file at:
 
 The marketplace entries point at `./plugins/<plugin-name>` so the repo can be installed or shared as a Codex plugin source.
 
-Install the marketplace from GitHub:
+### Codex Action
+
+For Codex environments that check out this repo, use the checked-in local environment action when you want to install or refresh the local marketplace plugins.
+
+The action is defined at:
+
+```text
+.codex/environments/environment.toml
+```
+
+It appears in Codex as:
+
+```text
+Install plugins
+```
+
+Run it on demand from Codex. It is not a setup script and should not run on every environment or worktree creation.
+
+The action runs:
+
+```bash
+./scripts/install-agent-plugins.sh
+```
+
+That script registers and refreshes the GitHub marketplace as `wgj`, installs every plugin listed in `.agents/plugins/marketplace.json` into the Codex plugin cache, and enables each plugin. The install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
+
+### Manual Setup
+
+Use this path when you are not checking out this repo in a Codex environment.
+
+Install and enable the marketplace from GitHub with the same setup script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/wgj/agent-plugins/main/scripts/install-agent-plugins.sh | bash
+```
+
+Or add the marketplace directly:
 
 ```bash
 codex plugin marketplace add https://github.com/wgj/agent-plugins --ref main
 ```
 
-Install every plugin advertised by the `wgj` marketplace:
-
-```bash
-codex plugin add goal-prompt-builder@wgj
-codex plugin add kubernetes@wgj
-codex plugin add codex-best-practices@wgj
-codex plugin add call-notes@wgj
-codex plugin add summarize@wgj
-```
+Then install and enable each plugin id listed in `.agents/plugins/marketplace.json` under `~/.codex/config.toml`.
 
 ## Global AGENTS.md
 

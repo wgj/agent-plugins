@@ -1,0 +1,7 @@
+version = 1
+name = "Agent Plugins"
+
+[[actions]]
+name = "Install plugins"
+icon = "tool"
+command = "./scripts/install-agent-plugins.sh"
