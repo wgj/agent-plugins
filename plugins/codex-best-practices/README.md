@@ -11,6 +11,7 @@ Use it when a project needs durable context that a cold-start Codex session can 
 - a `codex-best-practices` skill for creating or revising Codex project guidance
 - focused destination-project skills for project guidance, planning docs, and workflow systems
 - a focused ExecPlan waves skill for sequencing multi-plan initiatives
+- a focused Keychain environment skill for worktree-safe local secret setup
 - source guidance distilled from the OpenAI Codex best-practices page, the ExecPlans article, and a private reference project's docs pattern
 - a conservative helper script that initializes missing docs scaffolding, starter best-practice docs, product specs, and `001-` prefixed active ExecPlans
 - optional examples for `.codex/config.toml` and root-level `code_review.md`
@@ -22,6 +23,7 @@ Use it when a project needs durable context that a cold-start Codex session can 
 - `codex-planning-docs`: creates or revises product specs, `docs/PLANS.md`, and active ExecPlans for plan-first work.
 - `codex-exec-waves`: creates or revises `docs/exec-plans/WAVES.md` for phased multi-ExecPlan initiatives.
 - `codex-workflow-systems`: inspects a destination project for MCP, skill, automation, session, worktree, and subagent guidance.
+- `codex-keychain-environment`: creates or revises a checked-in Codex Environment that loads local secrets from macOS Keychain into each worktree.
 
 ## Helper Script
 
