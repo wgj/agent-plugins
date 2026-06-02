@@ -122,6 +122,18 @@ public final class ContactsService {
 
         try ensureAccess()
         let match = try findUpsertMatches(for: input)
+        if match.reason == "partialName" {
+            if dryRun {
+                return ContactOperationResult(
+                    action: "upsert",
+                    dryRun: true,
+                    matchedBy: match.reason,
+                    matches: match.contacts.map(Self.record(from:)),
+                    message: "Partial name matched existing contacts. No contact was changed; provide full name, email, phone, or an explicit identifier."
+                )
+            }
+            throw ContactsCLIError.message("upsert matched existing contacts by partial name; provide full name, email, phone, or use update with an explicit identifier")
+        }
         if match.contacts.count > 1 {
             if dryRun {
                 return ContactOperationResult(
@@ -279,12 +291,26 @@ public final class ContactsService {
         let givenName = ContactMatching.normalizedToken(input.givenName)
         let familyName = ContactMatching.normalizedToken(input.familyName)
         if !givenName.isEmpty || !familyName.isEmpty {
-            let matches = contacts.filter { contact in
-                ContactMatching.normalizedToken(contact.givenName) == givenName
-                    && ContactMatching.normalizedToken(contact.familyName) == familyName
+            let exactMatches = contacts.filter { contact in
+                ContactMatching.nameIdentityMatch(
+                    input: input,
+                    recordGivenName: contact.givenName,
+                    recordFamilyName: contact.familyName
+                ) == .exact
             }
-            if !matches.isEmpty {
-                return ("name", matches)
+            if !exactMatches.isEmpty {
+                return ("name", exactMatches)
+            }
+
+            let partialMatches = contacts.filter { contact in
+                ContactMatching.nameIdentityMatch(
+                    input: input,
+                    recordGivenName: contact.givenName,
+                    recordFamilyName: contact.familyName
+                ) == .partial
+            }
+            if !partialMatches.isEmpty {
+                return ("partialName", partialMatches)
             }
         }
 

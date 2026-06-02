@@ -46,6 +46,8 @@ struct ContactsCLISmokeTests {
         )
 
         check(ContactMatching.record(record, matches: "kelleghan"), "matches family name")
+        check(ContactMatching.record(record, matches: "Brian Kelleghan"), "matches full name")
+        check(ContactMatching.record(record, matches: "Kelleghan Brian"), "matches reversed full name")
         check(ContactMatching.record(record, matches: "ear inc"), "matches organization")
         check(ContactMatching.record(record, matches: "3035550100"), "matches normalized phone")
         check(ContactMatching.record(record, matches: "BRIAN@EXAMPLE.COM"), "matches normalized email")
@@ -64,6 +66,46 @@ struct ContactsCLISmokeTests {
         check(
             ContactMatching.hasUpsertIdentity(ContactInput(emailAddresses: [LabeledString(label: "work", value: "jane@example.com")])),
             "accepts email upsert"
+        )
+        check(
+            ContactMatching.nameIdentityMatch(
+                input: ContactInput(givenName: "Jane"),
+                recordGivenName: "Jane",
+                recordFamilyName: "Smith"
+            ) == .partial,
+            "single given-name upsert detects full existing contact"
+        )
+        check(
+            ContactMatching.nameIdentityMatch(
+                input: ContactInput(givenName: "Jane"),
+                recordGivenName: "Jane",
+                recordFamilyName: ""
+            ) == .exact,
+            "single given-name upsert exactly matches contact with no family name"
+        )
+        check(
+            ContactMatching.nameIdentityMatch(
+                input: ContactInput(familyName: "Smith"),
+                recordGivenName: "Jane",
+                recordFamilyName: "Smith"
+            ) == .partial,
+            "single family-name upsert detects full existing contact"
+        )
+        check(
+            ContactMatching.nameIdentityMatch(
+                input: ContactInput(familyName: "Smith"),
+                recordGivenName: "",
+                recordFamilyName: "Smith"
+            ) == .exact,
+            "single family-name upsert exactly matches contact with no given name"
+        )
+        check(
+            ContactMatching.nameIdentityMatch(
+                input: ContactInput(givenName: "Jane", familyName: "Doe"),
+                recordGivenName: "Jane",
+                recordFamilyName: "Smith"
+            ) == .none,
+            "full-name upsert requires both components to match"
         )
     }
 

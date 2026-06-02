@@ -1,5 +1,11 @@
 import Foundation
 
+public enum NameIdentityMatch: String {
+    case none
+    case exact
+    case partial
+}
+
 public enum ContactMatching {
     public static func trimmed(_ value: String?) -> String {
         value?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -45,6 +51,49 @@ public enum ContactMatching {
         return !trimmed(input.givenName).isEmpty || !trimmed(input.familyName).isEmpty
     }
 
+    public static func nameCandidates(givenName: String, familyName: String) -> [String] {
+        let given = trimmed(givenName)
+        let family = trimmed(familyName)
+        let values = [
+            given,
+            family,
+            [given, family].filter { !$0.isEmpty }.joined(separator: " "),
+            [family, given].filter { !$0.isEmpty }.joined(separator: " ")
+        ]
+        var seen: Set<String> = []
+        return values.filter { value in
+            !value.isEmpty && seen.insert(value).inserted
+        }
+    }
+
+    public static func nameIdentityMatch(
+        input: ContactInput,
+        recordGivenName: String,
+        recordFamilyName: String
+    ) -> NameIdentityMatch {
+        let givenName = normalizedToken(input.givenName)
+        let familyName = normalizedToken(input.familyName)
+        let recordGivenName = normalizedToken(recordGivenName)
+        let recordFamilyName = normalizedToken(recordFamilyName)
+
+        if !givenName.isEmpty && !familyName.isEmpty {
+            return recordGivenName == givenName && recordFamilyName == familyName ? .exact : .none
+        }
+        if !givenName.isEmpty {
+            guard recordGivenName == givenName else {
+                return .none
+            }
+            return recordFamilyName.isEmpty ? .exact : .partial
+        }
+        if !familyName.isEmpty {
+            guard recordFamilyName == familyName else {
+                return .none
+            }
+            return recordGivenName.isEmpty ? .exact : .partial
+        }
+        return .none
+    }
+
     public static func record(_ record: ContactRecord, matches query: String) -> Bool {
         let normalizedQuery = normalizedToken(query)
         guard !normalizedQuery.isEmpty else {
@@ -58,7 +107,8 @@ public enum ContactMatching {
             record.organizationName,
             record.jobTitle
         ]
-        if values.contains(where: { normalizedToken($0).contains(normalizedQuery) }) {
+        let nameValues = nameCandidates(givenName: record.givenName, familyName: record.familyName)
+        if (values + nameValues).contains(where: { normalizedToken($0).contains(normalizedQuery) }) {
             return true
         }
         let normalizedPhoneQuery = normalizedPhone(query)
