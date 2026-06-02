@@ -7,6 +7,7 @@ struct ContactsCLISmokeTests {
         try testDecodesCompanyAlias()
         testMatchesRecordsAcrossSupportedFields()
         testValidatesUsableUpsertIdentity()
+        testSeparatesPatchIntentFromUsableContent()
         testMapsKnownLabels()
         print("contacts-cli smoke tests passed")
     }
@@ -53,6 +54,8 @@ struct ContactsCLISmokeTests {
 
     private static func testValidatesUsableUpsertIdentity() {
         check(!ContactMatching.hasUpsertIdentity(ContactInput(organizationName: "Only Org")), "rejects org-only upsert")
+        check(!ContactMatching.hasUpsertIdentity(ContactInput(phoneNumbers: [LabeledString(label: "mobile", value: "")])), "rejects blank phone upsert")
+        check(!ContactMatching.hasUpsertIdentity(ContactInput(emailAddresses: [LabeledString(label: "work", value: "  ")])), "rejects blank email upsert")
         check(ContactMatching.hasUpsertIdentity(ContactInput(givenName: "Jane")), "accepts name upsert")
         check(
             ContactMatching.hasUpsertIdentity(ContactInput(phoneNumbers: [LabeledString(label: "mobile", value: "+13035550100")])),
@@ -62,6 +65,13 @@ struct ContactsCLISmokeTests {
             ContactMatching.hasUpsertIdentity(ContactInput(emailAddresses: [LabeledString(label: "work", value: "jane@example.com")])),
             "accepts email upsert"
         )
+    }
+
+    private static func testSeparatesPatchIntentFromUsableContent() {
+        check(ContactMatching.hasPatchIntent(ContactInput(jobTitle: "")), "empty text still clears on update")
+        check(ContactMatching.hasPatchIntent(ContactInput(phoneNumbers: [])), "empty phone array still clears on update")
+        check(!ContactMatching.hasUsableContent(ContactInput(jobTitle: "")), "empty text is not create content")
+        check(!ContactMatching.hasUsableContent(ContactInput(phoneNumbers: [LabeledString(label: "mobile", value: "")])), "blank phone is not create content")
     }
 
     private static func testMapsKnownLabels() {

@@ -22,12 +22,24 @@ public enum ContactMatching {
             || !trimmed(input.familyName).isEmpty
             || !trimmed(input.organizationName).isEmpty
             || !trimmed(input.jobTitle).isEmpty
-            || !(input.phoneNumbers ?? []).isEmpty
-            || !(input.emailAddresses ?? []).isEmpty
+            || (input.phoneNumbers ?? []).contains { !normalizedPhone($0.value).isEmpty }
+            || (input.emailAddresses ?? []).contains { !normalizedEmail($0.value).isEmpty }
+    }
+
+    public static func hasPatchIntent(_ input: ContactInput) -> Bool {
+        input.givenName != nil
+            || input.familyName != nil
+            || input.organizationName != nil
+            || input.jobTitle != nil
+            || input.phoneNumbers != nil
+            || input.emailAddresses != nil
     }
 
     public static func hasUpsertIdentity(_ input: ContactInput) -> Bool {
-        if !(input.emailAddresses ?? []).isEmpty || !(input.phoneNumbers ?? []).isEmpty {
+        if (input.emailAddresses ?? []).contains(where: { !normalizedEmail($0.value).isEmpty }) {
+            return true
+        }
+        if (input.phoneNumbers ?? []).contains(where: { !normalizedPhone($0.value).isEmpty }) {
             return true
         }
         return !trimmed(input.givenName).isEmpty || !trimmed(input.familyName).isEmpty
@@ -49,7 +61,9 @@ public enum ContactMatching {
         if values.contains(where: { normalizedToken($0).contains(normalizedQuery) }) {
             return true
         }
-        if record.phoneNumbers.contains(where: { normalizedPhone($0.value).contains(normalizedPhone(query)) }) {
+        let normalizedPhoneQuery = normalizedPhone(query)
+        if !normalizedPhoneQuery.isEmpty,
+           record.phoneNumbers.contains(where: { normalizedPhone($0.value).contains(normalizedPhoneQuery) }) {
             return true
         }
         return record.emailAddresses.contains { normalizedEmail($0.value).contains(normalizedQuery) }

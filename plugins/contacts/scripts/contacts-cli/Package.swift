@@ -16,7 +16,19 @@ let package = Package(
         .target(name: "ContactsCore"),
         .executableTarget(
             name: "ContactsCLI",
-            dependencies: ["ContactsCore"]
+            dependencies: ["ContactsCore"],
+            linkerSettings: [
+                .unsafeFlags([
+                    "-Xlinker",
+                    "-sectcreate",
+                    "-Xlinker",
+                    "__TEXT",
+                    "-Xlinker",
+                    "__info_plist",
+                    "-Xlinker",
+                    "Support/ContactsCLI-Info.plist"
+                ])
+            ]
         ),
         .executableTarget(
             name: "ContactsCLISmokeTests",

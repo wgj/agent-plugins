@@ -76,7 +76,7 @@ public final class ContactsService {
     }
 
     public func update(identifier: String, input: ContactInput, dryRun: Bool) throws -> ContactOperationResult {
-        guard ContactMatching.hasUsableContent(input) else {
+        guard ContactMatching.hasPatchIntent(input) else {
             throw ContactsCLIError.message("update input must include at least one supported field")
         }
 
@@ -176,7 +176,7 @@ public final class ContactsService {
     private func ensureAccess() throws {
         let status = CNContactStore.authorizationStatus(for: .contacts)
         switch status {
-        case .authorized:
+        case .authorized, .limited:
             return
         case .notDetermined:
             let semaphore = DispatchSemaphore(value: 0)
@@ -339,6 +339,8 @@ public final class ContactsService {
             return "denied"
         case .authorized:
             return "authorized"
+        case .limited:
+            return "limited"
         @unknown default:
             return "unknown"
         }
