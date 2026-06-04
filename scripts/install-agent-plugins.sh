@@ -51,6 +51,7 @@ if [ ! -f "$marketplace_json" ]; then
 fi
 
 plugin_ids=()
+legacy_plugin_ids=()
 cache_root="$CODEX_HOME/plugins/cache/$MARKETPLACE_NAME"
 plugin_list="$(mktemp)"
 trap 'rm -f "$plugin_list"' EXIT
@@ -109,6 +110,10 @@ PY
 
 while IFS=$'\t' read -r plugin_name plugin_version plugin_source; do
   plugin_ids+=("$plugin_name@$MARKETPLACE_NAME")
+  if [ "$plugin_name" = "prompt-builder" ]; then
+    legacy_plugin_ids+=("goal-prompt-builder@$MARKETPLACE_NAME")
+    rm -rf "$cache_root/goal-prompt-builder"
+  fi
   cache_parent="$cache_root/$plugin_name"
   cache_target="$cache_parent/$plugin_version"
   rm -rf "$cache_parent"
@@ -117,7 +122,7 @@ while IFS=$'\t' read -r plugin_name plugin_version plugin_source; do
   printf 'Installed %s@%s: %s\n' "$plugin_name" "$MARKETPLACE_NAME" "$cache_target"
 done <"$plugin_list"
 
-python3 - "$CONFIG_PATH" "${plugin_ids[@]}" <<'PY'
+python3 - "$CONFIG_PATH" "${#legacy_plugin_ids[@]}" "${legacy_plugin_ids[@]}" "${plugin_ids[@]}" <<'PY'
 from __future__ import annotations
 
 import re
@@ -125,7 +130,10 @@ import sys
 from pathlib import Path
 
 config_path = Path(sys.argv[1]).expanduser()
-plugin_ids = sys.argv[2:]
+legacy_count = int(sys.argv[2])
+legacy_plugin_ids = sys.argv[3 : 3 + legacy_count]
+plugin_ids = sys.argv[3 + legacy_count :]
+removable_plugin_ids = [*plugin_ids, *legacy_plugin_ids]
 begin = "# BEGIN agent-plugins managed block"
 end = "# END agent-plugins managed block"
 
@@ -157,12 +165,12 @@ def is_plugin_table(line: str) -> bool:
     header = table_header(line)
     return any(
         re.fullmatch(rf"\[\s*plugins\s*\.\s*{key_pattern(plugin_id)}\s*\]", header)
-        for plugin_id in plugin_ids
+        for plugin_id in removable_plugin_ids
     )
 
 
 def is_plugin_inline(line: str) -> bool:
-    return any(re.match(rf"\s*{key_pattern(plugin_id)}\s*=", line) for plugin_id in plugin_ids)
+    return any(re.match(rf"\s*{key_pattern(plugin_id)}\s*=", line) for plugin_id in removable_plugin_ids)
 
 
 def drop_existing_plugin_entries(document: str) -> str:

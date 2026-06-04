@@ -1,4 +1,0 @@
-interface:
-  display_name: "Goal Prompt Builder"
-  short_description: "Turn rough asks into Goal Mode prompts"
-  default_prompt: "Use $goal-prompt-builder to turn this rough objective into a concise Goal Mode prompt."
