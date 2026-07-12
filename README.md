@@ -5,7 +5,7 @@ Personal Codex plugin marketplace for small, focused agent plugins.
 ## Plugins
 
 - `kubernetes`: deploy applications to Kubernetes with preview-first defaults, port-forward exposure, rollout checks, status inspection, and cleanup.
-- `goal-prompt-builder`: create concise Codex Goal Mode prompts from rough objectives.
+- `prompt-builder`: create short Codex prompts from rough objectives.
 - `codex-best-practices`: bootstrap Codex best-practice docs, project guidance, product specs, ExecPlans, ExecPlan waves, reusable workflow notes, and validation/review contracts.
 - `call-notes`: match project `PEOPLE.md` contacts to business calls, download recordings, transcribe with OpenAI, and write project-local call transcript and summary files.
 - `summarize`: use the Summarize CLI to summarize and extract content from URLs, videos, PDFs, and local files.

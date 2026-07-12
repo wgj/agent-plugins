@@ -5,10 +5,10 @@
   },
   "plugins": [
     {
-      "name": "goal-prompt-builder",
+      "name": "prompt-builder",
       "source": {
         "source": "local",
-        "path": "./plugins/goal-prompt-builder"
+        "path": "./plugins/prompt-builder"
       },
       "policy": {
         "installation": "AVAILABLE",
