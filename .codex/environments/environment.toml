@@ -1,6 +1,9 @@
 version = 1
 name = "Agent Plugins"
 
+[setup]
+script = ""
+
 [[actions]]
 name = "Install plugins"
 icon = "tool"
