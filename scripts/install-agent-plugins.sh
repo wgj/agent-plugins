@@ -9,6 +9,40 @@ CODEX_HOME="${CODEX_HOME:-$HOME/.codex}"
 CONFIG_PATH="${CODEX_CONFIG:-$CODEX_HOME/config.toml}"
 mkdir -p "$(dirname "$CONFIG_PATH")"
 
+resolve_codex_bin() {
+  if [ -n "${CODEX_BIN:-}" ]; then
+    printf '%s\n' "$CODEX_BIN"
+    return
+  fi
+
+  if [[ "${CODEX_INTERNAL_ORIGINATOR_OVERRIDE:-}" == *Desktop* ]]; then
+    # ChatGPT is the current desktop app; Codex.app remains a migration fallback.
+    local candidate
+    for candidate in \
+      "/Applications/ChatGPT.app/Contents/Resources/codex" \
+      "$HOME/Applications/ChatGPT.app/Contents/Resources/codex" \
+      "/Applications/Codex.app/Contents/Resources/codex" \
+      "$HOME/Applications/Codex.app/Contents/Resources/codex"; do
+      if [ -x "$candidate" ]; then
+        printf '%s\n' "$candidate"
+        return
+      fi
+    done
+  fi
+
+  command -v codex || {
+    echo "Could not locate a Codex executable" >&2
+    return 1
+  }
+}
+
+CODEX_BIN="$(resolve_codex_bin)"
+if [ ! -x "$CODEX_BIN" ]; then
+  printf 'Codex executable is not available: %s\n' "$CODEX_BIN" >&2
+  exit 1
+fi
+printf 'Using Codex executable: %s\n' "$CODEX_BIN"
+
 extract_root() {
   sed -n -e 's/^Installed marketplace root: //p' -e 's/^Marketplace root: //p' <<<"$1" | tail -n 1
 }
@@ -18,21 +52,25 @@ if [ ! -d "$MARKETPLACE_SOURCE" ] && [ -n "$MARKETPLACE_REF" ]; then
   add_args+=("--ref" "$MARKETPLACE_REF")
 fi
 
-if ! add_output="$(codex plugin marketplace add "${add_args[@]}" 2>&1)"; then
+if ! add_output="$("$CODEX_BIN" plugin marketplace add "${add_args[@]}" 2>&1)"; then
   if ! grep -q "already added from a different source" <<<"$add_output"; then
-    printf '%s\n' "$add_output" >&2
+    if [ -n "$add_output" ]; then
+      printf '%s\n' "$add_output" >&2
+    else
+      printf 'Codex marketplace registration failed without output: %s\n' "$CODEX_BIN" >&2
+    fi
     exit 1
   fi
   printf '%s\nReplacing marketplace `%s` with %s.\n' "$add_output" "$MARKETPLACE_NAME" "$MARKETPLACE_SOURCE"
-  codex plugin marketplace remove "$MARKETPLACE_NAME"
-  add_output="$(codex plugin marketplace add "${add_args[@]}" 2>&1)"
+  "$CODEX_BIN" plugin marketplace remove "$MARKETPLACE_NAME"
+  add_output="$("$CODEX_BIN" plugin marketplace add "${add_args[@]}" 2>&1)"
 fi
 printf '%s\n' "$add_output"
 marketplace_root="$(extract_root "$add_output")"
 
 if [ ! -d "$MARKETPLACE_SOURCE" ]; then
   printf 'Refreshing Git marketplace `%s`.\n' "$MARKETPLACE_NAME"
-  upgrade_output="$(codex plugin marketplace upgrade "$MARKETPLACE_NAME" 2>&1)"
+  upgrade_output="$("$CODEX_BIN" plugin marketplace upgrade "$MARKETPLACE_NAME" 2>&1)"
   printf '%s\n' "$upgrade_output"
   upgraded_root="$(extract_root "$upgrade_output")"
   [ -z "$upgraded_root" ] || marketplace_root="$upgraded_root"

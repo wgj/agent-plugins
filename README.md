@@ -45,7 +45,7 @@ The action runs:
 ./scripts/install-agent-plugins.sh
 ```
 
-That script registers and refreshes the GitHub marketplace as `wgj`, installs every plugin listed in `.agents/plugins/marketplace.json` into the Codex plugin cache, and enables each plugin. The install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
+That script registers and refreshes the GitHub marketplace as `wgj`, installs every plugin listed in `.agents/plugins/marketplace.json` into the Codex plugin cache, and enables each plugin. When invoked by Codex Desktop on macOS, it uses the signed Codex executable bundled with the app instead of an unrelated `codex` earlier on `PATH`. Set `CODEX_BIN` to override executable selection. The install surface stays versioned with the repo instead of living as copied README lines. For local development against a checked-out marketplace, run it with `AGENT_PLUGINS_MARKETPLACE_SOURCE=/path/to/agent-plugins`.
 
 ### Manual Setup
 

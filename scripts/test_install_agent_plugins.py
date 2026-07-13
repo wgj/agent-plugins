@@ -61,6 +61,7 @@ class InstallAgentPluginsTest(unittest.TestCase):
             env = {
                 **os.environ,
                 "PATH": f"{fake_bin}{os.pathsep}{os.environ['PATH']}",
+                "CODEX_BIN": str(fake_bin / "codex"),
                 "CODEX_HOME": str(codex_home),
                 "AGENT_PLUGINS_MARKETPLACE_SOURCE": str(ROOT),
                 "AGENT_PLUGINS_MARKETPLACE_REF": "",
@@ -82,6 +83,22 @@ class InstallAgentPluginsTest(unittest.TestCase):
             self.assertFalse(legacy_cache_exists)
             self.assertIn('[plugins."prompt-builder@wgj"]', config)
             self.assertIn('[plugins."contacts@wgj"]', config)
+
+    def test_reports_missing_codex_executable(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            missing_codex = Path(tmpdir) / "missing-codex"
+            result = subprocess.run(
+                [str(SCRIPT)],
+                cwd=ROOT,
+                env={**os.environ, "CODEX_BIN": str(missing_codex)},
+                check=False,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+
+            self.assertEqual(1, result.returncode)
+            self.assertIn("Codex executable is not available", result.stderr)
 
 
 if __name__ == "__main__":
