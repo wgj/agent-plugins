@@ -67,6 +67,7 @@ Keep `transcript.md` and `summary.md` commit-friendly. The helper adds or preser
 
 ## Defaults
 
+- Quo API base: `https://api.quo.com/v1`.
 - Visible Quo number: `+17203034975`, unless overridden by `QUO_PHONE_NUMBER` or `--quo-number`.
 - Transcription model: `gpt-4o-transcribe`, override with `OPENAI_TRANSCRIBE_MODEL`.
 - Summary model: `gpt-5.5`, override with `OPENAI_SUMMARY_MODEL`.

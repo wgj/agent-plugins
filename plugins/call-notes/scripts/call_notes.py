@@ -24,7 +24,7 @@ from typing import Any
 
 
 DEFAULT_QUO_NUMBER = "+17203034975"
-QUO_API_BASE = "https://api.openphone.com/v1"
+QUO_API_BASE = "https://api.quo.com/v1"
 OPENAI_API_BASE = "https://api.openai.com/v1"
 DEFAULT_TRANSCRIBE_MODEL = "gpt-4o-transcribe"
 DEFAULT_SUMMARY_MODEL = "gpt-5.5"
