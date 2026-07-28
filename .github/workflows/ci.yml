@@ -25,6 +25,7 @@ jobs:
       - name: Run unit tests
         run: |
           python3 -m unittest discover -s plugins/codex-best-practices/tests
+          python3 scripts/test_call_notes.py
           python3 scripts/test_install_agent_plugins.py
 
       - name: Compile Python scripts
