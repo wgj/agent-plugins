@@ -5,7 +5,6 @@ Personal Codex plugin marketplace for small, focused agent plugins.
 ## Plugins
 
 - `kubernetes`: deploy applications to Kubernetes with preview-first defaults, port-forward exposure, rollout checks, status inspection, and cleanup.
-- `prompt-builder`: create short Codex prompts from rough objectives.
 - `codex-best-practices`: bootstrap Codex best-practice docs, project guidance, product specs, ExecPlans, ExecPlan waves, reusable workflow notes, and validation/review contracts.
 - `call-notes`: match project `PEOPLE.md` contacts to business calls, download recordings, transcribe with OpenAI, and write project-local call transcript and summary files.
 - `summarize`: use the Summarize CLI to summarize and extract content from URLs, videos, PDFs, and local files.
@@ -73,19 +72,19 @@ The source-controlled copy of the global Codex guidance lives at:
 global/AGENTS.md
 ```
 
-Sync it to the active Codex home file with:
-
-```bash
-scripts/sync-global-agents.sh apply
-```
-
-Check for drift with:
+Check for differences with the active Codex home file. Running the script without a command also performs this read-only check:
 
 ```bash
 scripts/sync-global-agents.sh check
 ```
 
-Use `scripts/sync-global-agents.sh pull` only when the live global file intentionally changed first and should become the repo source of truth.
+Apply an intentional update with:
+
+```bash
+scripts/sync-global-agents.sh apply
+```
+
+An apply saves an adjacent backup before replacing a different active file. Use `scripts/sync-global-agents.sh pull` only when the live global file intentionally changed first and should become the repo source of truth.
 
 ## Codex App Skill Setup
 

@@ -7,6 +7,7 @@ import os
 import subprocess
 import tempfile
 import textwrap
+import tomllib
 import unittest
 from pathlib import Path
 
@@ -16,15 +17,17 @@ SCRIPT = ROOT / "scripts" / "install-agent-plugins.sh"
 
 
 class InstallAgentPluginsTest(unittest.TestCase):
-    def test_prompt_builder_rename_removes_legacy_config_and_cache(self) -> None:
+    def test_removed_plugins_stay_removed_and_unrelated_config_survives(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:
             sandbox = Path(tmpdir)
             codex_home = sandbox / "codex-home"
             config_path = codex_home / "config.toml"
             legacy_cache = codex_home / "plugins/cache/wgj/goal-prompt-builder/0.1.0"
+            retired_cache = codex_home / "plugins/cache/wgj/prompt-builder/0.1.0"
             fake_bin = sandbox / "bin"
             fake_bin.mkdir()
             legacy_cache.mkdir(parents=True)
+            retired_cache.mkdir(parents=True)
             config_path.parent.mkdir(parents=True, exist_ok=True)
             config_path.write_text(
                 textwrap.dedent(
@@ -37,6 +40,14 @@ class InstallAgentPluginsTest(unittest.TestCase):
 
                     [plugins."contacts@wgj"]
                     enabled = false
+
+                    # BEGIN agent-plugins managed block
+                    [plugins."prompt-builder@wgj"]
+                    enabled = true
+
+                    [plugins."unrelated@example"]
+                    enabled = false
+                    # END agent-plugins managed block
                     """
                 ).lstrip(),
                 encoding="utf-8",
@@ -66,8 +77,9 @@ class InstallAgentPluginsTest(unittest.TestCase):
                 "AGENT_PLUGINS_MARKETPLACE_SOURCE": str(ROOT),
                 "AGENT_PLUGINS_MARKETPLACE_REF": "",
             }
+            command = [str(SCRIPT)]
             subprocess.run(
-                [str(SCRIPT)],
+                command,
                 cwd=ROOT,
                 env=env,
                 check=True,
@@ -81,8 +93,15 @@ class InstallAgentPluginsTest(unittest.TestCase):
 
             self.assertNotIn("goal-prompt-builder@wgj", config)
             self.assertFalse(legacy_cache_exists)
-            self.assertIn('[plugins."prompt-builder@wgj"]', config)
+            self.assertNotIn("prompt-builder@wgj", config)
+            self.assertFalse(retired_cache.parent.exists())
             self.assertIn('[plugins."contacts@wgj"]', config)
+            parsed = tomllib.loads(config)
+            self.assertFalse(parsed["plugins"]["unrelated@example"]["enabled"])
+            self.assertTrue(parsed["plugins"]["contacts@wgj"]["enabled"])
+
+            subprocess.run(command, cwd=ROOT, env=env, check=True, capture_output=True)
+            self.assertEqual(parsed, tomllib.loads(config_path.read_text(encoding="utf-8")))
 
     def test_reports_missing_codex_executable(self) -> None:
         with tempfile.TemporaryDirectory() as tmpdir:

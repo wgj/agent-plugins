@@ -1,7 +1,7 @@
 {
   "name": "summarize",
-  "version": "0.1.0",
-  "description": "Use the Summarize CLI from Codex to summarize and extract content from URLs, videos, PDFs, and local files.",
+  "version": "0.2.0",
+  "description": "Use Summarize CLI v0.21.11 workflows from Codex to extract, transcribe, and summarize public URLs, media, PDFs, and local files.",
   "author": {
     "name": "Weston Johnson",
     "url": "https://github.com/wgj"
@@ -14,6 +14,10 @@
     "summarize.sh",
     "transcription",
     "youtube",
+    "twitter",
+    "x",
+    "video",
+    "media",
     "pdf",
     "article",
     "extraction"
@@ -21,8 +25,8 @@
   "skills": "./skills/",
   "interface": {
     "displayName": "Summarize",
-    "shortDescription": "Summarize links, videos, PDFs, and files.",
-    "longDescription": "Use the local Summarize CLI from Codex to summarize URLs, articles, YouTube videos, podcasts, transcripts, PDFs, and local files, with extraction, JSON output, and provider-key guidance.",
+    "shortDescription": "Extract and summarize links, media, PDFs, and files.",
+    "longDescription": "Use Summarize CLI v0.21.11 workflows from Codex to extract, transcribe, and summarize public URLs, articles, videos, podcasts, PDFs, and local files with JSON and provider-safety guidance.",
     "developerName": "Weston Johnson",
     "category": "Productivity",
     "capabilities": [
@@ -31,6 +35,7 @@
     "websiteURL": "https://summarize.sh",
     "defaultPrompt": [
       "Use Summarize to summarize this URL.",
+      "Use Summarize to transcribe this public video.",
       "Use Summarize to extract the transcript from this YouTube video.",
       "Use Summarize to summarize this local PDF."
     ]

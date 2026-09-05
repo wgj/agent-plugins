@@ -91,6 +91,11 @@ fi
 plugin_ids=()
 legacy_plugin_ids=()
 cache_root="$CODEX_HOME/plugins/cache/$MARKETPLACE_NAME"
+# Retire both names so an update cannot restore the removed prompt plugin.
+for retired_plugin in prompt-builder goal-prompt-builder; do
+  legacy_plugin_ids+=("$retired_plugin@$MARKETPLACE_NAME")
+  rm -rf "$cache_root/$retired_plugin"
+done
 plugin_list="$(mktemp)"
 trap 'rm -f "$plugin_list"' EXIT
 python3 - "$marketplace_json" >"$plugin_list" <<'PY'
@@ -148,10 +153,6 @@ PY
 
 while IFS=$'\t' read -r plugin_name plugin_version plugin_source; do
   plugin_ids+=("$plugin_name@$MARKETPLACE_NAME")
-  if [ "$plugin_name" = "prompt-builder" ]; then
-    legacy_plugin_ids+=("goal-prompt-builder@$MARKETPLACE_NAME")
-    rm -rf "$cache_root/goal-prompt-builder"
-  fi
   cache_parent="$cache_root/$plugin_name"
   cache_target="$cache_parent/$plugin_version"
   rm -rf "$cache_parent"
@@ -178,7 +179,9 @@ end = "# END agent-plugins managed block"
 text = config_path.read_text(encoding="utf-8") if config_path.exists() else ""
 if text and not text.endswith("\n"):
     text += "\n"
-text = re.sub(rf"\n?{re.escape(begin)}\n.*?{re.escape(end)}\n?", "\n", text, flags=re.S)
+# Codex may append other plugin entries between these markers. Preserve those
+# entries; remove only this installer's markers and the plugins it manages.
+text = re.sub(rf"(?m)^(?:{re.escape(begin)}|{re.escape(end)})\n?", "", text)
 
 
 def key_pattern(plugin_id: str) -> str:

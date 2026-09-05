@@ -1,4 +1,0 @@
-interface:
-  display_name: "Prompt Builder"
-  short_description: "Turn rough asks into short Codex prompts"
-  default_prompt: "Use $prompt-builder to turn this rough objective into a short Codex prompt."
