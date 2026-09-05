@@ -1,6 +1,6 @@
 {
   "name": "call-notes",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Turn project-relevant business call recordings into transcripts, summaries, and follow-up notes.",
   "author": {
     "name": "Local developer"

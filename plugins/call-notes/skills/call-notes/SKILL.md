@@ -1,15 +1,21 @@
 ---
 name: call-notes
-description: Fetch and transcribe business-phone call recordings for the current Codex project by matching call participants against a structured PEOPLE.md file at the project root, then write calls/<date>-<person>/transcript.md and summary.md with audio retained locally but ignored by Git.
+description: Inspect project call notes or generate transcripts and summaries from business-phone recordings. Match participants against the project-root PEOPLE.md. Requested generation saves transcript and summary Markdown under calls/, with audio retained locally but ignored by Git.
 ---
 
 # Call Notes
 
 Use this skill when the user asks to transcribe, fetch, summarize, or inspect phone calls for the current project.
 
+## Task Scope
+
+- For inspection, review, or status requests, read existing files under `calls/`. If provider discovery is needed, use `transcribe-latest --dry-run`; it lists matching calls without downloading, transcribing, or writing output.
+- Run the processing command and write project outputs only for requested transcription or call-note generation. For a summary of an existing transcript, answer from that file; save a new summary only when requested.
+- Use `--force` only when the user requests regeneration of both existing transcript and summary files.
+
 ## Project Contract
 
-The project root must contain `PEOPLE.md` with a structured table:
+For provider discovery or generation, the project root must contain `PEOPLE.md` with a structured table. Reading existing notes does not require provider setup.
 
 ```md
 # PEOPLE
@@ -49,11 +55,11 @@ Useful options:
 - `--created-after 2026-05-30T00:00:00Z` limits call search.
 - `--call-id CA...` processes a specific provider call ID.
 - `--dry-run` lists matching calls without downloading or transcribing.
-- `--force` regenerates existing transcript and summary files.
+- `--force` regenerates both existing transcript and summary files; use it only when that regeneration is requested.
 
 ## Expected Output
 
-For each processed call, write:
+For each call processed as part of requested generation, write:
 
 ```text
 calls/YYYY-MM-DD-person-or-company-callid/

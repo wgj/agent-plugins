@@ -6,8 +6,8 @@ usage() {
 Usage: scripts/sync-global-agents.sh [apply|check|diff|pull]
 
 Commands:
-  apply  Copy global/AGENTS.md to ${CODEX_HOME:-$HOME/.codex}/AGENTS.md. Default.
-  check  Exit 0 when the repo copy and global file match; otherwise show a diff.
+  apply  Copy the repo file to the global file; back up a different existing file.
+  check  Exit 0 when the repo and global files match; otherwise show a diff. Default.
   diff   Show a unified diff between the repo copy and global file.
   pull   Copy ${CODEX_HOME:-$HOME/.codex}/AGENTS.md back into global/AGENTS.md.
 
@@ -22,7 +22,7 @@ repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 codex_home="${CODEX_HOME:-$HOME/.codex}"
 source_path="${AGENTS_SOURCE:-$repo_root/global/AGENTS.md}"
 target_path="${AGENTS_TARGET:-$codex_home/AGENTS.md}"
-command="${1:-apply}"
+command="${1:-check}"
 
 require_file() {
   local path="$1"
@@ -47,7 +47,16 @@ show_diff() {
 case "$command" in
   apply|sync|install)
     require_file "$source_path" "Source AGENTS.md"
+    if [[ -f "$target_path" ]] && cmp -s "$source_path" "$target_path"; then
+      echo "AGENTS.md is in sync."
+      exit 0
+    fi
     mkdir -p "$(dirname -- "$target_path")"
+    if [[ -f "$target_path" ]]; then
+      backup_path="$(mktemp "${target_path}.backup.XXXXXX")"
+      cp -p "$target_path" "$backup_path"
+      echo "Backed up $target_path -> $backup_path"
+    fi
     cp "$source_path" "$target_path"
     echo "Synced $source_path -> $target_path"
     ;;

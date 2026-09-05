@@ -1,4 +1,4 @@
 interface:
   display_name: "Summarize"
-  short_description: "Summarize links, videos, PDFs, and files"
-  default_prompt: "Use $summarize to summarize this URL."
+  short_description: "Extract and summarize links, media, PDFs, and files"
+  default_prompt: "Use $summarize to extract or summarize this source and report any coverage limits."

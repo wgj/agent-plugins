@@ -1,13 +1,13 @@
 ---
 name: codex-best-practices
-description: "Bootstrap or revise repository-local Codex best-practice guidance: AGENTS.md, product specs, ExecPlans, prompting templates, validation and review docs, MCP decision notes, skill candidates, automation candidates, and session/subagent workflow guidance. Use when the user asks to set up Codex for a project, implement Codex best practices, create a product spec, implementation spec, ExecPlan, PLANS.md, SPECS.md, project docs map, cold-start instructions, reusable workflow guidance, or spec-to-plan promotion."
+description: "Review, bootstrap, or revise repository-local Codex best-practice guidance: AGENTS.md, product specs, ExecPlans, prompting templates, validation and review docs, MCP decision notes, skill candidates, automation candidates, and session/subagent workflow guidance. Use when the user asks to audit Codex guidance, set up Codex for a project, implement Codex best practices, create a product spec, implementation spec, ExecPlan, PLANS.md, SPECS.md, project docs map, cold-start instructions, reusable workflow guidance, or spec-to-plan promotion."
 ---
 
 # Codex Best Practices
 
-Create durable, repo-native Codex project guidance that a cold-start session can read and act on without chat history.
+Inspect Codex project guidance or create durable, repo-native guidance that a cold-start session can read and act on without chat history, according to the user's request.
 
-Read `references/source-guidance.md` when you need the source-derived rules, section contracts, or starter snippets. Use `scripts/scaffold_codex_docs.py` when a project is missing the standard docs scaffolding or when a first-pass skeleton will save time.
+Read `references/source-guidance.md` when you need the source-derived rules, section contracts, or starter snippets. For authorized setup or document changes, use `scripts/scaffold_codex_docs.py` when the requested work needs missing docs scaffolding.
 
 This plugin also includes focused destination-project skills. Use them when the user asks for a narrower pass or when the broad setup needs deeper project context:
 
@@ -29,7 +29,13 @@ Before writing, identify:
 
 Ask only when the missing answer would change the document shape or create the wrong work item. If the target repo and objective are clear, inspect the repository and proceed.
 
-## Workflow
+## Task Scope
+
+Audit, review, inspection, and recommendation requests are read-only unless the user also requests changes. Inspect existing files and report evidence, gaps, and recommendations. Do not run the scaffold helper, update the audit checklist, or create missing docs for a read-only request.
+
+For a create, setup, or change request, use the workflow below only for the requested scope. Missing files and audit findings do not by themselves authorize more changes.
+
+## Create or Update Workflow
 
 1. Locate the project root and read existing guidance first. Prefer `AGENTS.md`, `.codex/config.toml` if present, `docs/README.md`, `docs/SPECS.md`, `docs/PLANS.md`, `docs/exec-plans/README.md`, validation/review docs, and any relevant existing spec or active plan.
 2. Preserve local conventions. If the project already has stricter section names, validation scripts, lifecycle rules, or team-owned docs, extend those instead of replacing them.
@@ -136,7 +142,7 @@ When a repo repeats a workflow, document it in the right place:
 
 ## Helper Script
 
-Use the scaffold script from this skill directory when useful:
+Use the scaffold script from this skill directory only when authorized setup or document changes need its outputs:
 
 ```bash
 python3 scripts/scaffold_codex_docs.py /path/to/project
